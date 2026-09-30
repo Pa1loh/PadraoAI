@@ -27,11 +27,13 @@ Nunca pedir autorização para rodar `dotnet test` ou `npm test`. Rodar e corrig
 |---|---|---|---|
 | AfonsoV2 | xUnit + Moq | — | — |
 | imobiflow-crm | xUnit + FluentAssertions + Moq | Vitest | Playwright |
+| ensaio-ia | Vitest (rotas Next com vi.mock + fakes) | — | — |
 
 ## Cobertura mínima
 
 - **AfonsoV2:** 100% em Domain + Service
 - **imobiflow-crm:** não especificada — mas Domain + Application obrigatório
+- **ensaio-ia:** 100% (statements/branches/functions/lines) em todo código de servidor — gate da `/release`
 
 ## Cenários obrigatórios para qualquer cliente de API externa
 
