@@ -38,6 +38,28 @@ namespace HubAfiliado.Infra.AliExpress;
 namespace HubAfiliado.Infra.AliExpress { }
 ```
 
+### Global Usings (obrigatório por projeto)
+
+Cada projeto tem um `GlobalUsings.cs` na raiz com os namespaces usados em 3+ arquivos.  
+**Nunca repita** um using que já está no `GlobalUsings.cs` do projeto.
+
+```csharp
+// src/Infra/GlobalUsings.cs
+global using HubAfiliado.Domain.Entities;
+global using HubAfiliado.Domain.Interfaces;
+global using Microsoft.EntityFrameworkCore;
+global using Microsoft.Extensions.Logging;
+```
+
+O `.editorconfig` na raiz da solução enforça as regras automaticamente via `dotnet format`:
+```ini
+[*.cs]
+csharp_style_namespace_declarations = file_scoped:warning
+dotnet_diagnostic.IDE0005.severity  = warning   # remove usings redundantes
+```
+
+Para aplicar em novos arquivos: `dotnet format style HubAfiliado.sln --diagnostics IDE0005 IDE0161 --severity warn`
+
 ## Nomenclatura (Português do Brasil)
 
 | Elemento | Padrão | Exemplo |

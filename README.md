@@ -17,9 +17,13 @@ PadraoAI/
 │   └── afonsoV2.md                # MCP filesystem + SQLite do Hub Afiliado
 │
 ├── skills/
-│   ├── aliexpress.md              # Skill: AliExpress Portals API v2 (AfonsoV2)
-│   └── 3dprint/
-│       └── SKILL.md               # Skill global: Ender 3 V3 KE + PETG + OrcaSlicer
+│   ├── 3dprint/                   # Skill global: Ender 3 V3 KE + PETG + OrcaSlicer
+│   ├── agent-browser/             # Skill: automação de navegador via CLI CDP
+│   ├── aliexpress/                # Skill: AliExpress Portals API v2 (AfonsoV2)
+│   ├── humanizer/                 # Skill: reescrita de texto sem padrões de IA
+│   ├── security-audit/            # Skill: auditoria de segurança e modelagem de ameaças
+│   ├── sonarqube/                 # Skill: resolução e regras SonarQube
+│   └── worktrees/                 # Skill: gerenciamento isolado de Git worktrees
 │
 ├── rules/
 │   ├── dotnet-10.md               # Rules: .NET 10 / C# 14 — sintaxe, nomenclatura, patterns
