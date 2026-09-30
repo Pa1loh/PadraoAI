@@ -19,6 +19,7 @@ PadraoAI/
 ├── skills/
 │   ├── 3dprint/                   # Skill global: Ender 3 V3 KE + PETG + OrcaSlicer
 │   ├── agent-browser/             # Skill: automação de navegador via CLI CDP
+│   ├── ai-memory-*/               # Skills: retrieval, handoff, messaging, durable-pages (ai-memory)
 │   ├── aliexpress/                # Skill: AliExpress Portals API v2 (AfonsoV2)
 │   ├── humanizer/                 # Skill: reescrita de texto sem padrões de IA
 │   ├── security-audit/            # Skill: auditoria de segurança e modelagem de ameaças
