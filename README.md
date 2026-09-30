@@ -24,6 +24,7 @@ PadraoAI/
 │   ├── humanizer/                 # Skill: reescrita de texto sem padrões de IA
 │   ├── security-audit/            # Skill: auditoria de segurança e modelagem de ameaças
 │   ├── sonarqube/                 # Skill: resolução e regras SonarQube
+│   ├── watch/ (e sub-skills)      # Skill: percepção e análise de vídeo/áudio e THE LOOP (watch-skill)
 │   └── worktrees/                 # Skill: gerenciamento isolado de Git worktrees
 │
 ├── rules/
