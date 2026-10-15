@@ -1,0 +1,9 @@
+{
+  "name": "padraoai",
+  "version": "0.1.0",
+  "description": "Padrão de desenvolvimento com IA (XP/TDD/segurança/economia de tokens) para adotar em qualquer projeto",
+  "bin": { "padraoai": "bin/padraoai.mjs" },
+  "files": ["bin", "templates", "inegociaveis.md", "ADOTAR.md", "LEIA-ME-AGENTE.md"],
+  "license": "MIT",
+  "type": "module"
+}

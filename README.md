@@ -1,72 +1,22 @@
 # PadraoAI
 
-Repositório de referência consolidando os padrões de AI tooling, MCP, skills, agents e CI/CD usados nos projetos **AfonsoV2** (Hub Afiliado) e **imobiflow-crm** (Meu Corretor).
+Padrão de desenvolvimento com IA: XP, TDD, segurança, economia de tokens. Poucos arquivos, cada regra com o porquê e como é imposta.
 
-Serve como ponto de partida para análise de infraestrutura, reutilização de configurações e evolução dos padrões de desenvolvimento assistido por AI.
-
----
-
-## Estrutura
-
+## Adotar num projeto (novo ou existente)
+```bash
+npx github:Pa1loh/PadraoAI init     # cria AGENTS.md, ponteiros, templates de PR/issue/ADR e hook anti-segredo (nunca sobrescreve)
 ```
-PadraoAI/
-├── INFRA.md                       # Descrição consolidada das duas infras + comparação
-│
-├── mcp/
-│   ├── global.md                  # GitHub MCP + plugins globais do Claude Code
-│   └── afonsoV2.md                # MCP filesystem + SQLite do Hub Afiliado
-│
-├── skills/
-│   ├── 3dprint/                   # Skill global: Ender 3 V3 KE + PETG + OrcaSlicer
-│   ├── agent-browser/             # Skill: automação de navegador via CLI CDP
-│   ├── ai-memory-*/               # Skills: retrieval, handoff, messaging, durable-pages (ai-memory)
-│   ├── aliexpress/                # Skill: AliExpress Portals API v2 (AfonsoV2)
-│   ├── humanizer/                 # Skill: reescrita de texto sem padrões de IA
-│   ├── security-audit/            # Skill: auditoria de segurança e modelagem de ameaças
-│   ├── sonarqube/                 # Skill: resolução e regras SonarQube
-│   ├── watch/ (e sub-skills)      # Skill: percepção e análise de vídeo/áudio e THE LOOP (watch-skill)
-│   └── worktrees/                 # Skill: gerenciamento isolado de Git worktrees
-│
-├── rules/
-│   ├── dotnet-10.md               # Rules: .NET 10 / C# 14 — sintaxe, nomenclatura, patterns
-│   └── video-audio-mix.md         # Rule: separação narração ElevenLabs vs música trend
-│
-├── agents/
-│   ├── sonar-fix-afonsoV2.md      # Agent: sonar-fix para HubAfiliado
-│   └── sonar-fix-imobiflow.md     # Agent: sonar-fix para ImobiFlow-CRM
-│
-└── cicd/
-    ├── imobiflow-overview.md      # CI/CD do ImobiFlow: jobs, secrets, quality gate
-    └── afonsoV2-overview.md       # CI/CD do AfonsoV2: jobs, Blue-Green, gitleaks
-```
+Depois diga ao agente: **"leia docs/padraoai/ADOTAR.md e adote o padrão"**. Ou, sem npx, aponte o agente para este repo (`LEIA-ME-AGENTE.md`).
 
----
-
-## Projetos de Origem
-
-| Projeto | Caminho | Stack |
-|---|---|---|
-| Hub Afiliado | `../AfonsoV2/` | .NET 10 + SQLite + Telegram.Bot |
-| ImobiFlow CRM | `../imobiflow-crm/` | React 19 + .NET 10 + PostgreSQL |
-
----
-
-## Infraestrutura Compartilhada
-
-| Recurso | Detalhe |
+## Mapa
+| Arquivo | Para quê |
 |---|---|
-| Hardware | Orange Pi ARM64 |
-| GitHub Actions runner | `self-hosted, linux, arm64` |
-| SonarQube | `http://100.106.88.49:9001` (Tailscale) |
-| Acesso remoto | Tailscale VPN |
-| .NET SDK | `/home/paulo/.dotnet` |
+| `inegociaveis.md` | 17 regras duras: regra, porquê, enforcement |
+| `ADOTAR.md` | roteiro de adoção + checklist de verificação |
+| `LEIA-ME-AGENTE.md` | porta de entrada para o agente |
+| `templates/` | exemplos copiados pelo `init` (adapte, não cole cego) |
+| `rules/` | clean-architecture, tdd-protocol, clean-code-agents, dotnet-10 |
+| `skills/` | skills (workflow e extras — reorganização em andamento) |
+| `mcp/` | MCPs usados e quando |
 
----
-
-## Leitura Recomendada
-
-1. `INFRA.md` — visão completa das duas infras e comparação de padrões
-2. `cicd/` — entender o pipeline antes de qualquer alteração de deploy
-3. `agents/sonar-fix-*.md` — corrigir quality gates SonarQube
-4. `rules/dotnet-10.md` — referência de sintaxe C# 14 / .NET 10
-5. `mcp/` — configurar MCP servers no Claude Desktop
+Referências: Akita (akitaonrails.com, ailair), pedrosatin/skills, docs do Claude Code, arXiv 2602.11988.
