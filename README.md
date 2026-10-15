@@ -16,7 +16,8 @@ Depois diga ao agente: **"leia docs/padraoai/ADOTAR.md e adote o padrão"**. Ou,
 | `LEIA-ME-AGENTE.md` | porta de entrada para o agente |
 | `templates/` | exemplos copiados pelo `init` (adapte, não cole cego) |
 | `rules/` | clean-architecture, tdd-protocol, clean-code-agents, dotnet-10 |
-| `skills/` | skills (workflow e extras — reorganização em andamento) |
+| `skills/` | núcleo: adotar-padrao, tdd-regressao, pr-audit, release, validate-agent-config, security-audit, sonarqube, worktrees, agent-browser, ai-memory-* |
+| `extras/` | opcional: design, vídeo (watch), 3dprint, unity, humanizer, aliexpress, exemplos de infra/agents |
 | `mcp/` | MCPs usados e quando |
 
 Referências: Akita (akitaonrails.com, ailair), pedrosatin/skills, docs do Claude Code, arXiv 2602.11988.
