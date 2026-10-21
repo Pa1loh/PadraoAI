@@ -37,7 +37,7 @@ Base: Akita (XP/TDD/Clean Code p/ agentes), docs oficiais do Claude Code, estudo
     Domínio extenso → `.claude/rules/*.md` com `paths:` ou ADR/docs; fluxo raro → skill (carrega sob demanda).
     Hábitos: `/clear` entre tarefas e após 2 correções falhas; pesquisa pesada em subagent; `gh`/CLI antes de MCP; MCP só no projeto que usa (cada um custa schema no contexto); sem `@import` global grande.
 11. **Poucas skills, cada uma com um trabalho, <120 linhas, descrição de 1 linha com gatilhos.** "Skill encostada é dívida": sem uso recorrente, não cria; sem uso há meses, apaga.
-12. **Um agente por tarefa/worktree, não enxame.** Orquestração multi-agente piorou resultados nos benchmarks do Akita. Paralelismo só via worktrees independentes.
+12. **Um agente por tarefa/worktree, não enxame.** Orquestração multi-agente piorou resultados nos benchmarks do Akita. Paralelismo só via worktrees independentes; subagents são read-only, escrita single-threaded (detalhes em `LEIA-ME-AGENTE.md`).
 
 ## Código (Clean Code p/ agentes)
 
