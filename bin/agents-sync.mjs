@@ -3,6 +3,7 @@
 //   Claude Code  → .claude/agents/<n>.md        (tools/disallowedTools reais)
 //   Antigravity  → .agents/agents/<n>.md        (model flash|pro; subagent nativo)
 //   dsh-tui etc. → .agents/skills/papel-<n>/    (SKILL.md: lido por dsh, agy e claude)
+//   + skill /issue em .claude/skills e .agents/skills. O dev não é agent: é a sessão da aba.
 import { readdirSync, readFileSync, writeFileSync, mkdirSync, existsSync } from 'node:fs';
 import { join, dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -44,6 +45,15 @@ export function sincronizar(projeto, origem, { sobrescrever = true } = {}) {
       writeFileSync(alvo, conteudo);
       escritos.push(rel);
     }
+  }
+  // skill /issue: o fluxo da issue (analista → TDD → revisor → PR) como comando explícito, não como esperança de delegação
+  const skill = readFileSync(join(origem, '..', 'skills', 'issue', 'SKILL.md'), 'utf8');
+  for (const rel of ['.claude/skills/issue/SKILL.md', '.agents/skills/issue/SKILL.md']) {
+    const alvo = join(projeto, rel);
+    if (!sobrescrever && existsSync(alvo)) continue;
+    mkdirSync(dirname(alvo), { recursive: true });
+    writeFileSync(alvo, skill);
+    escritos.push(rel);
   }
   return escritos;
 }

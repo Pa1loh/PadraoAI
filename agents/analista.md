@@ -1,6 +1,6 @@
 ---
 name: analista
-description: Levanta contexto e requisitos (leitura de código, docs, issue, web). Use antes de implementar ou quando faltar informação. Nunca edita.
+description: Levanta contexto e requisitos (leitura de código, docs, issue, web). Use proactively antes de implementar ou quando faltar informação sobre o código ou uma API externa. Nunca edita.
 model: haiku
 tools: Read, Grep, Glob, WebFetch, WebSearch, mcp__ai-memory__*
 skills: ai-memory-retrieval

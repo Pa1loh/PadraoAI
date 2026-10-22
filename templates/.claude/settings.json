@@ -2,7 +2,9 @@
   "hooks": {
     "PreToolUse": [
       { "matcher": "Edit|Write",
-        "hooks": [{ "type": "command", "command": ".claude/hooks/bloqueia-segredos.sh" }] }
+        "hooks": [{ "type": "command", "command": ".claude/hooks/bloqueia-segredos.sh" }] },
+      { "matcher": "Bash",
+        "hooks": [{ "type": "command", "command": ".claude/hooks/bloqueia-comandos.sh" }] }
     ]
   }
 }

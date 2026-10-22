@@ -1,6 +1,6 @@
 ---
 name: revisor
-description: Revisão adversarial do diff em contexto limpo, só correção e requisito (não estilo). Use depois do dev, antes do PR. Nunca edita.
+description: Revisão adversarial do diff em contexto limpo, só correção e requisito (não estilo). Use proactively depois de implementar e antes de abrir o PR. Nunca edita.
 model: sonnet
 tools: Read, Grep, Glob, Bash, mcp__sonarqube__*
 disallowedTools: Write, Edit, WebFetch, WebSearch

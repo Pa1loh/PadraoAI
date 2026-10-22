@@ -1,51 +1,81 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { mkdtempSync, readFileSync, existsSync } from 'node:fs';
+import { mkdtempSync, readFileSync, existsSync, writeFileSync } from 'node:fs';
+import { spawnSync } from 'node:child_process';
 import { tmpdir } from 'node:os';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { sincronizar } from '../bin/agents-sync.mjs';
 
-const origem = join(dirname(fileURLToPath(import.meta.url)), '..', 'agents');
+const raiz = join(dirname(fileURLToPath(import.meta.url)), '..');
+const origem = join(raiz, 'agents');
 const projeto = mkdtempSync(join(tmpdir(), 'agents-'));
 sincronizar(projeto, origem);
 const ler = (rel) => readFileSync(join(projeto, rel), 'utf8');
+const PAPEIS = ['analista', 'revisor', 'infra', 'deploy'];
 
-test('gera os 3 formatos para cada papel', () => {
-  for (const n of ['analista', 'dev', 'revisor', 'infra', 'deploy']) {
+test('gera os 3 formatos para cada papel e a skill /issue', () => {
+  for (const n of PAPEIS) {
     for (const rel of [`.claude/agents/${n}.md`, `.agents/agents/${n}.md`, `.agents/skills/papel-${n}/SKILL.md`]) {
       assert.ok(existsSync(join(projeto, rel)), `falta ${rel}`);
     }
   }
+  assert.ok(existsSync(join(projeto, '.claude/skills/issue/SKILL.md')));
+  assert.ok(existsSync(join(projeto, '.agents/skills/issue/SKILL.md')));
+  assert.ok(!existsSync(join(projeto, '.claude/agents/dev.md')), 'dev é a sessão da aba, não um agent');
 });
 
-test('papéis de leitura não recebem Edit/Write no Claude', () => {
-  for (const n of ['analista', 'revisor', 'infra', 'deploy']) {
+test('nenhum papel edita código nem cria subagents', () => {
+  for (const n of PAPEIS) {
     const tools = ler(`.claude/agents/${n}.md`).match(/^tools: (.*)$/m)[1];
-    assert.doesNotMatch(tools, /\b(Edit|Write)\b/, `${n} não pode editar`);
-  }
-});
-
-test('só o dev edita código e ninguém tem WebFetch junto de Bash em infra/deploy', () => {
-  assert.match(ler('.claude/agents/dev.md'), /^tools: .*Edit/m);
-  for (const n of ['infra', 'deploy']) {
-    assert.match(ler(`.claude/agents/${n}.md`), /^disallowedTools: .*WebFetch/m);
-  }
-});
-
-test('nenhum papel cria subagents e modelo do Antigravity é válido', () => {
-  for (const n of ['analista', 'dev', 'revisor', 'infra', 'deploy']) {
+    assert.doesNotMatch(tools, /\b(Edit|Write|Agent)\b/, `${n} não pode editar nem delegar`);
     assert.match(ler(`.claude/agents/${n}.md`), /Não crie subagents/);
     assert.match(ler(`.agents/agents/${n}.md`), /^model: (inherit|flash|pro)$/m);
   }
 });
 
-test('init não sobrescreve papel já customizado no projeto', async () => {
-  const { writeFileSync } = await import('node:fs');
-  const alvo = join(projeto, '.claude/agents/dev.md');
-  writeFileSync(alvo, 'meu dev customizado');
+test('infra e deploy não têm web; analista e revisor delegam com "proactively"', () => {
+  for (const n of ['infra', 'deploy']) assert.match(ler(`.claude/agents/${n}.md`), /^disallowedTools: .*WebFetch/m);
+  for (const n of ['analista', 'revisor']) assert.match(ler(`.claude/agents/${n}.md`), /^description: .*proactively/m);
+});
+
+test('skill /issue só roda quando o usuário invoca e cita analista, revisor e PR', () => {
+  const s = ler('.claude/skills/issue/SKILL.md');
+  assert.match(s, /disable-model-invocation: true/);
+  for (const palavra of ['analista', 'revisor', 'gh pr create', 'TDD']) assert.match(s, new RegExp(palavra));
+});
+
+test('init não sobrescreve papel já customizado no projeto', () => {
+  const alvo = join(projeto, '.claude/agents/revisor.md');
+  writeFileSync(alvo, 'meu revisor customizado');
   sincronizar(projeto, origem, { sobrescrever: false });
-  assert.equal(readFileSync(alvo, 'utf8'), 'meu dev customizado');
+  assert.equal(readFileSync(alvo, 'utf8'), 'meu revisor customizado');
   sincronizar(projeto, origem);
-  assert.match(readFileSync(alvo, 'utf8'), /Você é o dev/);
+  assert.match(readFileSync(alvo, 'utf8'), /Você é o revisor/);
+});
+
+const hook = join(raiz, 'templates/.claude/hooks/bloqueia-comandos.sh');
+const roda = (command, agent_type) =>
+  spawnSync('bash', [hook], { input: JSON.stringify({ tool_input: { command }, ...(agent_type && { agent_type }) }) }).status;
+
+test('hook: sessão comum não acessa host nem faz merge/force push, mesmo disfarçado', () => {
+  for (const c of ['ssh pi@host ls', "bash -c 'ssh pi@host'", 'scp a b:c', 'kubectl get pods', 'docker --context prod ps',
+    'git push --force origin x', 'git -C . push -f origin x', 'git push --force-with-lease', 'gh pr merge 12', 'rm -rf /', 'rm -rf ~']) {
+    assert.equal(roda(c), 2, `deveria bloquear: ${c}`);
+  }
+});
+
+test('hook: trabalho normal passa', () => {
+  for (const c of ['dotnet test', 'git push origin feature/x', 'git commit -m "fix: ssh timeout"', 'rm -rf bin obj', 'gh pr create --fill', 'docker compose up -d']) {
+    assert.equal(roda(c), 0, `deveria liberar: ${c}`);
+  }
+});
+
+test('hook: infra acessa host, deploy faz merge, mas force push segue bloqueado para todos', () => {
+  assert.equal(roda('ssh pi@host ls', 'infra'), 0);
+  assert.equal(roda('docker --context prod ps', 'deploy'), 0);
+  assert.equal(roda('gh pr merge 12', 'deploy'), 0);
+  assert.equal(roda('gh pr merge 12', 'infra'), 2);
+  assert.equal(roda('git push --force origin x', 'infra'), 2);
+  assert.equal(roda('git push -f origin x', 'deploy'), 2);
 });
