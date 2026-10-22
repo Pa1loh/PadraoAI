@@ -93,3 +93,21 @@ test('hook: infra acessa host, deploy faz merge, mas force push segue bloqueado 
   assert.equal(roda('git push --force origin x', 'infra'), 2);
   assert.equal(roda('git push -f origin x', 'deploy'), 2);
 });
+
+import { bloco, aplicar } from '../bin/dsh-setup.mjs';
+
+test('dsh-setup: patch idempotente, preserva o que o usuário já tinha', () => {
+  const vazio = '# camada do usuário\n[]\n';
+  const uma = aplicar(vazio, bloco('/x/PadraoAI'));
+  assert.match(uma, /configPath: '\/x\/PadraoAI\/dsh\/hooks\.json'/);
+  assert.doesNotMatch(uma, /^\[\]$/m);
+  assert.equal(aplicar(uma, bloco('/x/PadraoAI')), uma, 'rodar de novo não muda nada');
+  assert.match(aplicar(uma, bloco('/y/Outro')), /pluginRoot: '\/y\/Outro'/);
+  assert.equal((aplicar(uma, bloco('/y/Outro')).match(/padraoai-hooks/g) ?? []).length, 1);
+});
+
+test('dsh/hooks.json aponta para os 2 hooks reais e casa ferramentas em minúsculo', () => {
+  const j = JSON.parse(readFileSync(join(raiz, 'dsh/hooks.json'), 'utf8')).hooks.PreToolUse;
+  assert.match(j[0].matcher, /write/); assert.match(j[1].matcher, /bash/);
+  for (const h of j) assert.ok(existsSync(join(raiz, h.hooks[0].command.replace('${CLAUDE_PLUGIN_ROOT}/', ''))));
+});

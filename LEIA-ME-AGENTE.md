@@ -15,7 +15,7 @@ Regras de conduta ao adotar:
 - Ao terminar, rode a verificação do `ADOTAR.md` e relate o que passou e o que ficou pendente.
 
 ## Três CLIs, um padrão
-Claude Code, Antigravity (`agy`) e DeepSeek (`dsh-tui`) leem o mesmo `AGENTS.md` (o `CLAUDE.md` é só `@AGENTS.md`). O time está em `agents/` (ver `agents/README.md`): rode `npx github:Pa1loh/PadraoAI agents` no projeto. Fluxo da issue: `/issue`. Só o Claude impõe limites por ferramenta e por hook; nos demais o limite é instrução + hook/CI.
+Claude Code, Antigravity (`agy`) e DeepSeek (`dsh-tui`) leem o mesmo `AGENTS.md` (o `CLAUDE.md` é só `@AGENTS.md`). O time está em `agents/` (ver `agents/README.md`): rode `npx github:Pa1loh/PadraoAI agents` no projeto. Fluxo da issue: `/issue`. Só o Claude impõe `tools` por papel. Os hooks de segurança valem no Claude e, após `node bin/dsh-setup.mjs`, no dsh; no agy o limite é instrução + CI.
 
 ## Subagents e paralelismo (sem um pisar no outro)
 
