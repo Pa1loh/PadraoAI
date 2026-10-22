@@ -3,6 +3,7 @@
 import { cpSync, existsSync, mkdirSync, readdirSync, statSync, copyFileSync } from 'node:fs';
 import { join, dirname, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { sincronizar } from './agents-sync.mjs';
 
 const raiz = join(dirname(fileURLToPath(import.meta.url)), '..');
 const destino = process.cwd();
@@ -22,11 +23,17 @@ function copiar(origem, base = origem, criados = [], pulados = []) {
   return { criados, pulados };
 }
 
+if (cmd === 'agents') {
+  const gerados = sincronizar(destino, join(raiz, 'agents'));
+  console.log(`Papéis gerados/atualizados (${gerados.length}):\n  ${gerados.join('\n  ')}`);
+  process.exit(0);
+}
 if (cmd !== 'init') {
-  console.log('Uso: npx github:Pa1loh/PadraoAI init');
+  console.log('Uso: npx github:Pa1loh/PadraoAI init | agents');
   process.exit(cmd ? 1 : 0);
 }
 const { criados, pulados } = copiar(join(raiz, 'templates'));
+criados.push(...sincronizar(destino, join(raiz, 'agents'), { sobrescrever: false }));
 const doc = join(destino, 'docs', 'padraoai');
 mkdirSync(doc, { recursive: true });
 for (const f of ['inegociaveis.md', 'ADOTAR.md']) if (!existsSync(join(doc, f))) { copyFileSync(join(raiz, f), join(doc, f)); criados.push(`docs/padraoai/${f}`); }

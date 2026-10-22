@@ -12,8 +12,8 @@ Bloco JSON para `~/.config/claude/claude_desktop_config.json` (Arch Linux):
       "args": [
         "-y",
         "@modelcontextprotocol/server-filesystem",
-        "/home/paulo/Documents/git/Dev Vault/AfonsoV2/src",
-        "/home/paulo/Documents/git/Dev Vault/AfonsoV2/_legacy_code"
+        "/home/paulo/Documents/git/AfonsoV2/src",
+        "/home/paulo/Documents/git/AfonsoV2/_legacy_code"
       ]
     },
     "sqlite-hub-afiliado": {
@@ -22,7 +22,7 @@ Bloco JSON para `~/.config/claude/claude_desktop_config.json` (Arch Linux):
         "-y",
         "@modelcontextprotocol/server-sqlite",
         "--db-path",
-        "/home/paulo/Documents/git/Dev Vault/AfonsoV2/src/API/data/hubafiliado.db"
+        "/home/paulo/Documents/git/AfonsoV2/src/API/data/hubafiliado.db"
       ]
     }
   }

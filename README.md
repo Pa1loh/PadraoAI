@@ -14,6 +14,7 @@ Depois diga ao agente: **"leia docs/padraoai/ADOTAR.md e adote o padrão"**. Ou,
 | `inegociaveis.md` | 17 regras duras: regra, porquê, enforcement |
 | `ADOTAR.md` | roteiro de adoção + checklist de verificação |
 | `LEIA-ME-AGENTE.md` | porta de entrada para o agente |
+| `agents/` | time de papéis (analista, dev, revisor, infra, deploy) e matriz de acesso; `agents` gera para Claude/Antigravity/dsh |
 | `templates/` | exemplos copiados pelo `init` (adapte, não cole cego) |
 | `rules/` | clean-architecture, tdd-protocol, clean-code-agents, dotnet-10 |
 | `skills/` | núcleo: adotar-padrao, tdd-regressao, pr-audit, release, validate-agent-config, security-audit, sonarqube, worktrees, agent-browser, ai-memory-* |

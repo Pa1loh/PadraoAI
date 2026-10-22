@@ -1,48 +1,10 @@
-# MCP — Configuração Global (Claude Code)
+# MCP — estado real do PC (2026-10-22)
 
-## Servidores MCP ativos globalmente
+Global só `ai-memory` (`http://127.0.0.1:49374/mcp`), nos 3 CLIs: Claude (`claude mcp list`), Antigravity (`agy mcp list`), dsh (`/mcp`).
+Conectores do claude.ai (Claude Docs, MercadoLibre) vêm da conta, não do repo.
+GitHub: use `gh`, não MCP. Token nunca em config, só variável de ambiente.
 
-Configurado em `~/.claude/settings.json`:
+Por projeto (ver `CATALOGO-SOB-DEMANDA.md`): sonarqube, watch-skill, ender3, unityMCP, cloudflare/vercel/supabase.
+Quem acessa o quê por papel: `agents/README.md`.
 
-```json
-{
-  "mcpServers": {
-    "github": {
-      "command": "npx",
-      "args": [
-        "-y",
-        "@modelcontextprotocol/server-github"
-      ],
-      "env": {
-        "GITHUB_PERSONAL_ACCESS_TOKEN": "<token configurado em ~/.claude/settings.json>"
-      }
-    }
-  }
-}
-```
-
-## O que o servidor GitHub MCP faz
-
-- Permite ao Claude Code interagir com a API do GitHub diretamente
-- Leitura de repositórios, issues, pull requests
-- Criação/atualização de issues, comentários, PRs
-- Pesquisa de código em repositórios remotos
-
-## Plugins globais habilitados
-
-Configurados em `~/.claude/settings.json`:
-
-| Plugin | Descrição |
-|---|---|
-| `clangd-lsp@claude-plugins-official` | Language Server para C/C++ |
-| `obsidian@obsidian-skills` | Integração com vault Obsidian (kepano/obsidian-skills) |
-
-## Skills globais instaladas
-
-| Skill | Caminho | Descrição |
-|---|---|---|
-| `3dprint` | `~/.claude/skills/3dprint/SKILL.md` | Assistente para Ender 3 V3 KE + PETG |
-
-## Origem
-
-Extraído de: `~/.claude/settings.json`
+dsh-tui: MCP entra no `~/.dsh/profiles/dsh-tui/cordis.patch.yml` via `@deepseek-ai/dsh-mcp-client` (stdio ou HTTP).

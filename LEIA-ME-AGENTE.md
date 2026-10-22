@@ -14,6 +14,9 @@ Regras de conduta ao adotar:
 - Mostre o diff proposto antes de gravar em arquivos de configuração do usuário.
 - Ao terminar, rode a verificação do `ADOTAR.md` e relate o que passou e o que ficou pendente.
 
+## Três CLIs, um padrão
+Claude Code, Antigravity (`agy`) e DeepSeek (`dsh-tui`) leem o mesmo `AGENTS.md` (o `CLAUDE.md` é só `@AGENTS.md`). O time de papéis está em `agents/` (ver `agents/README.md`): rode `npx github:Pa1loh/PadraoAI agents` no projeto. Só o Claude impõe `tools` por papel; nos demais o limite é instrução + hook/CI.
+
 ## Subagents e paralelismo (sem um pisar no outro)
 
 Padrão: **um agente escreve, os demais leem.** Fontes: Cognition ("Multi-Agents: What's Actually Working"), Anthropic (multi-agent research system), Akita (benchmarks e AI Lair), Willison (parallel coding agents).

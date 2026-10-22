@@ -12,6 +12,7 @@ Global hoje: skills `worktrees`, `ai-memory-retrieval`, `ai-memory-handoff` (+ O
 
 ## Plugins (todos desligados no global; ligue no `.claude/settings.json` do projeto)
 `{"enabledPlugins":{"mercadopago@claude-plugins-official":true}}` — também: vercel@claude-plugins-official, obsidian@obsidian-skills, clangd-lsp@claude-plugins-official.
+Instalados no PC e usados por projeto (ex.: AfonsoV2 liga no `.claude/settings.json`): csharp-lsp, context7, sonarqube (`@claude-plugins-official`); claude-seo@agricidaniel-claude-seo.
 
 ## MCP (adicione no projeto: `claude mcp add -s project ...` grava `.mcp.json`)
 - sonarqube: `claude mcp add -s project sonarqube -e DOCKER_CONTEXT=pcx86 -- sonar run mcp --read-only --project <CHAVE>`
