@@ -39,10 +39,24 @@ test('infra e deploy não têm web; analista e revisor delegam com "proactively"
   for (const n of ['analista', 'revisor']) assert.match(ler(`.claude/agents/${n}.md`), /^description: .*proactively/m);
 });
 
-test('skill /issue só roda quando o usuário invoca e cita analista, revisor e PR', () => {
-  const s = ler('.claude/skills/issue/SKILL.md');
-  assert.match(s, /disable-model-invocation: true/);
+test('skill /issue é invocável pelo modelo (dsh headless não tem slash command) e cita analista, revisor e PR', () => {
+  const s = ler('.agents/skills/issue/SKILL.md');
+  assert.doesNotMatch(s, /^disable-model-invocation: true/m, 'dsh só expõe ao modelo skills sem disable-model-invocation');
   for (const palavra of ['analista', 'revisor', 'gh pr create', 'TDD']) assert.match(s, new RegExp(palavra));
+});
+
+test('/issue continua explícito no Claude, mas a cópia do dsh é invocável pelo modelo', () => {
+  assert.match(ler('.claude/skills/issue/SKILL.md'), /^disable-model-invocation: true/m);
+  assert.doesNotMatch(ler('.agents/skills/issue/SKILL.md'), /^disable-model-invocation: true/m);
+});
+
+test('skill /issue ensina o caminho do dsh: subagent genérico com o papel e argumento vindo da mensagem', () => {
+  const s = ler('.agents/skills/issue/SKILL.md');
+  assert.match(s, /\.agents\/skills\/papel-analista\/SKILL\.md/);
+  assert.match(s, /\.agents\/skills\/papel-revisor\/SKILL\.md/);
+  assert.match(s, /dsh/);
+  assert.match(s, /subagent/);
+  assert.match(s, /dsh[^\n]*mensagem|mensagem[^\n]*dsh/i, 'sem substituição de $ARGUMENTS, o argumento está na mensagem');
 });
 
 test('init não sobrescreve papel já customizado no projeto', () => {

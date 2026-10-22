@@ -48,11 +48,17 @@ export function sincronizar(projeto, origem, { sobrescrever = true } = {}) {
   }
   // skill /issue: o fluxo da issue (analista → TDD → revisor → PR) como comando explícito, não como esperança de delegação
   const skill = readFileSync(join(origem, '..', 'skills', 'issue', 'SKILL.md'), 'utf8');
-  for (const rel of ['.claude/skills/issue/SKILL.md', '.agents/skills/issue/SKILL.md']) {
+  // Claude mantém /issue explícito (disable-model-invocation). dsh headless não tem slash
+  // command e só enxerga skills invocáveis pelo modelo, então a cópia .agents perde o bloqueio.
+  const skillModelo = skill.replace(/^disable-model-invocation: true\n/m, '');
+  for (const [rel, conteudo] of [
+    ['.claude/skills/issue/SKILL.md', skill],
+    ['.agents/skills/issue/SKILL.md', skillModelo],
+  ]) {
     const alvo = join(projeto, rel);
     if (!sobrescrever && existsSync(alvo)) continue;
     mkdirSync(dirname(alvo), { recursive: true });
-    writeFileSync(alvo, skill);
+    writeFileSync(alvo, conteudo);
     escritos.push(rel);
   }
   return escritos;
