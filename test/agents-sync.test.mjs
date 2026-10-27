@@ -125,8 +125,34 @@ test('dsh-setup: patch idempotente, preserva o que o usuário já tinha', () => 
   assert.equal((aplicar(uma, bloco('/y/Outro')).match(/padraoai-hooks/g) ?? []).length, 1);
 });
 
-test('dsh/hooks.json aponta para os 2 hooks reais e casa ferramentas em minúsculo', () => {
+test('dsh/hooks.json aponta para os 3 hooks reais e casa ferramentas em minúsculo', () => {
   const j = JSON.parse(readFileSync(join(raiz, 'dsh/hooks.json'), 'utf8')).hooks.PreToolUse;
   assert.match(j[0].matcher, /write/); assert.match(j[1].matcher, /bash/);
-  for (const h of j) assert.ok(existsSync(join(raiz, h.hooks[0].command.replace('${CLAUDE_PLUGIN_ROOT}/', ''))));
+  const comandos = j.flatMap((m) => m.hooks.map((h) => h.command));
+  assert.equal(comandos.length, 3);
+  for (const c of comandos) assert.ok(existsSync(join(raiz, c.replace('${CLAUDE_PLUGIN_ROOT}/', ''))), c);
+  assert.ok(comandos.some((c) => c.endsWith('valida-issue.sh')), 'dsh também barra issue mal formada');
+});
+
+test('settings do Claude e do dsh registram os mesmos hooks (nenhuma engine fica sem portão)', () => {
+  const nomes = (arq) => JSON.parse(readFileSync(join(raiz, arq), 'utf8')).hooks.PreToolUse
+    .flatMap((m) => m.hooks.map((h) => h.command.split('/').pop())).sort();
+  assert.deepEqual(nomes('templates/.claude/settings.json'), nomes('dsh/hooks.json'));
+});
+
+const hookIssue = join(raiz, 'templates/.claude/hooks/valida-issue.sh');
+const rodaIssue = (command) => spawnSync('bash', [hookIssue], { input: JSON.stringify({ tool_input: { command } }), encoding: 'utf8' });
+const corpoOk = '## Problema\nx\n## Comportamento esperado\ny\n## Critério de pronto\n- [ ] z\n## Onde mexer\na.ts\n';
+
+test('hook valida-issue: barra gh issue create sem seções, longa demais ou disfarçada; libera o resto', () => {
+  const dir = mkdtempSync(join(tmpdir(), 'issue-'));
+  const bom = join(dir, 'bom.md'); writeFileSync(bom, corpoOk);
+  const longo = join(dir, 'longo.md'); writeFileSync(longo, corpoOk + 'palavra '.repeat(450));
+  assert.equal(rodaIssue('gh issue create --title x --body "so isso"').status, 2);
+  assert.match(rodaIssue('gh issue create --title x --body "so isso"').stderr, /Problema/);
+  assert.equal(rodaIssue(`gh issue create --title x --body-file ${longo}`).status, 2);
+  assert.match(rodaIssue(`gh issue create --title x --body-file ${longo}`).stderr, /palavras/);
+  assert.equal(rodaIssue("bash -c 'gh issue create --title x'").status, 2);
+  assert.equal(rodaIssue(`gh issue create --title x --body-file ${bom}`).status, 0);
+  for (const c of ['gh issue list', 'gh issue view 3', 'git commit -m "docs: gh issue create"']) assert.equal(rodaIssue(c).status, 0, c);
 });

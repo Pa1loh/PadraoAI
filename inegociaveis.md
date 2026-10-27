@@ -35,6 +35,7 @@ Base: Akita (XP/TDD/Clean Code p/ agentes), docs oficiais do Claude Code, estudo
 
 10. **Contexto é o recurso crítico.** AGENTS.md ≤ ~120 linhas, só o que o agente erraria sem saber (comandos, invariantes, armadilhas). Sem "visão geral do repo", sem o que o modelo já sabe, sem coisa que muda todo mês.
     Domínio extenso → `.claude/rules/*.md` com `paths:` ou ADR/docs; fluxo raro → skill (carrega sob demanda).
+    **Cada papel lê só o que é dele**: o próprio `.md` (≤25 linhas, ≤2 skills, `skills:` nunca no frontmatter, que injeta a skill inteira a cada chamada) e o que a tarefa aponta. A description da skill (≤350 caracteres) pesa em toda sessão. Imposição: `bin/lint-contexto.mjs` no CI; exceção só em `.contexto-allow`, com motivo.
     Hábitos: `/clear` entre tarefas e após 2 correções falhas; pesquisa pesada em subagent; `gh`/CLI antes de MCP; MCP só no projeto que usa (cada um custa schema no contexto); sem `@import` global grande.
 11. **Poucas skills, cada uma com um trabalho, <120 linhas, descrição de 1 linha com gatilhos.** "Skill encostada é dívida": sem uso recorrente, não cria; sem uso há meses, apaga.
 12. **Um agente por tarefa/worktree, não enxame.** Orquestração multi-agente piorou resultados nos benchmarks do Akita. Paralelismo só via worktrees independentes; subagents são read-only, escrita single-threaded (detalhes em `LEIA-ME-AGENTE.md`).

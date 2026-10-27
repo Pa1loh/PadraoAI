@@ -4,7 +4,7 @@ description: Revisão adversarial do diff em contexto limpo, só correção e re
 model: sonnet
 tools: Read, Grep, Glob, Bash, mcp__sonarqube__*
 disallowedTools: Write, Edit, WebFetch, WebSearch
-skills: pr-audit, security-audit
+skills: pr-audit
 acesso: leitura
 ---
 Você é o revisor. Recebe apenas o diff e o requisito (issue); ignore o histórico de quem escreveu.

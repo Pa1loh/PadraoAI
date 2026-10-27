@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="pt-BR">
+<meta charset="utf-8">
+<title>engines.yml · PadraoAI</title>
+<style>
+  :root { color-scheme: dark; --bg:#0d1117; --card:#161b22; --linha:#30363d; --txt:#e6edf3; --mut:#8b949e; --ok:#3fb950; --erro:#f85149; }
+  body { margin:0; padding:24px; background:var(--bg); color:var(--txt); font:14px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace; }
+  main { max-width:980px; margin:auto; display:grid; gap:16px; }
+  section { background:var(--card); border:1px solid var(--linha); border-radius:8px; padding:16px; }
+  h1 { font-size:18px; margin:0 0 4px; } h2 { font-size:13px; text-transform:uppercase; letter-spacing:.08em; color:var(--mut); margin:0 0 10px; }
+  table { width:100%; border-collapse:collapse; } th,td { text-align:left; padding:4px 8px 4px 0; vertical-align:middle; }
+  th { color:var(--mut); font-weight:400; }
+  input,select,button { background:var(--bg); color:var(--txt); border:1px solid var(--linha); border-radius:6px; padding:5px 8px; font:inherit; }
+  button { cursor:pointer; background:#238636; border-color:#2ea043; } button:disabled { opacity:.5; cursor:default; }
+  .perfis label,.fora label { margin-right:14px; } .mut { color:var(--mut); } .erro { color:var(--erro); } .ok { color:var(--ok); }
+  .plano td:first-child { color:var(--mut); }
+</style>
+<main>
+  <section><h1>Quem faz o quê</h1><span class="mut">Recomendação lida pelo /issue e /issue-criar. Salvar grava docs/engines.yml.</span></section>
+  <section><h2>Perfil ativo</h2><div class="perfis" id="perfis"></div></section>
+  <section><h2>Engines sem quota agora</h2><div class="fora" id="fora"></div></section>
+  <section><h2>Tiers</h2><table id="tiers"></table></section>
+  <section><h2>Papéis (tier por perfil)</h2><table id="papeis"></table></section>
+  <section><h2>Fallback (ordem, separada por vírgula)</h2><table id="fallback"></table></section>
+  <section><h2>Plano efetivo</h2><table class="plano" id="plano"></table></section>
+  <section><button id="salvar">Salvar</button> <span id="msg"></span></section>
+</main>
+<script>
+const t = new URLSearchParams(location.search).get('t');
+const api = (p, o) => fetch(p + '?t=' + t, o).then(async (r) => ({ ok: r.ok, corpo: await r.json() }));
+const PERFIS = ['economico', 'base', 'qualidade'];
+let e, cat = {};
+// input.list é só de leitura (Object.assign lançaria erro): vai como atributo.
+const el = (tag, { list, ...props } = {}, ...filhos) => {
+  const n = Object.assign(document.createElement(tag), props);
+  if (list) n.setAttribute('list', list);
+  n.append(...filhos);
+  return n;
+};
+const campo = (valor, aoMudar, props = {}) => el('input', { value: valor, oninput: (ev) => aoMudar(ev.target.value), ...props });
+const escolha = (opcoes, atual, aoMudar) => el('select', { onchange: (ev) => aoMudar(ev.target.value) }, ...opcoes.map((o) => el('option', { value: o, selected: o === atual }, o)));
+const engines = () => [...new Set([...Object.values(e.tiers).map((x) => x.engine), ...Object.keys(e.fallback), ...e.indisponivel])];
+
+function desenhar() {
+  const perfis = document.getElementById('perfis'); perfis.replaceChildren(...PERFIS.map((p) =>
+    el('label', {}, el('input', { type: 'radio', name: 'perfil', checked: e.perfil === p, onchange: () => { e.perfil = p; plano(); } }), ' ' + p)));
+  document.getElementById('fora').replaceChildren(...engines().map((n) =>
+    el('label', {}, el('input', { type: 'checkbox', checked: e.indisponivel.includes(n), onchange: (ev) => { e.indisponivel = ev.target.checked ? [...e.indisponivel, n] : e.indisponivel.filter((x) => x !== n); plano(); } }), ' ' + n)));
+  document.getElementById('tiers').replaceChildren(el('tr', {}, ...['tier', 'engine', 'modelo', 'esforço'].map((h) => el('th', {}, h))),
+    ...Object.entries(e.tiers).map(([nome, v]) => el('tr', {}, el('td', {}, nome),
+      el('td', {}, campo(v.engine, (x) => { v.engine = x; plano(); })),
+      el('td', {}, campo(v.modelo, (x) => { v.modelo = x; }, { list: 'modelos-' + nome })),
+      el('td', {}, campo(v.esforco, (x) => { v.esforco = x; }, { list: 'esforcos-' + nome })),
+      el('datalist', { id: 'modelos-' + nome }, ...(cat[v.engine] ?? []).map((m) => el('option', { value: m.id }))),
+      el('datalist', { id: 'esforcos-' + nome }, ...((cat[v.engine] ?? []).find((m) => m.id === v.modelo)?.esforcos ?? ['low', 'medium', 'high']).map((x) => el('option', { value: x }))))));
+  document.getElementById('papeis').replaceChildren(el('tr', {}, el('th', {}, 'papel'), ...PERFIS.map((p) => el('th', {}, p)), el('th', {}, 'outra família')),
+    ...Object.entries(e.papeis).map(([nome, v]) => el('tr', {}, el('td', {}, nome),
+      ...PERFIS.map((p) => el('td', {}, escolha(Object.keys(e.tiers), v[p], (x) => { v[p] = x; plano(); }))),
+      el('td', {}, el('input', { type: 'checkbox', checked: v.outra_familia === true, onchange: (ev) => { if (ev.target.checked) v.outra_familia = true; else delete v.outra_familia; } })))));
+  document.getElementById('fallback').replaceChildren(...Object.entries(e.fallback).map(([nome, ordem]) =>
+    el('tr', {}, el('td', {}, nome), el('td', {}, campo(ordem.join(', '), (x) => { e.fallback[nome] = x.split(',').map((s) => s.trim()).filter(Boolean); plano(); })))));
+}
+
+async function plano() {
+  const { corpo } = await api('/api/plano', { method: 'POST', body: JSON.stringify(e) });
+  document.getElementById('plano').replaceChildren(...(corpo.plano ?? []).map((l) => el('tr', {}, el('td', {}, l.papel),
+    el('td', {}, `${l.engine ?? '—'} · ${l.modelo} · ${l.esforco}`), el('td', { className: 'mut' }, l.via + (l.outra_familia ? ' · engine diferente da do dev' : '')))));
+  if (corpo.erros) document.getElementById('plano').replaceChildren(el('tr', {}, el('td', { className: 'erro' }, corpo.erros.join('; '))));
+}
+
+document.getElementById('salvar').onclick = async () => {
+  const { ok, corpo } = await api('/api/engines', { method: 'PUT', body: JSON.stringify(e) });
+  const msg = document.getElementById('msg');
+  msg.className = ok ? 'ok' : 'erro'; msg.textContent = ok ? 'salvo em docs/engines.yml' : (corpo.erros ?? [corpo.erro]).join('; ');
+};
+
+(async () => {
+  cat = (await api('/api/catalogo')).corpo;
+  e = (await api('/api/engines')).corpo.engines;
+  desenhar(); plano();
+})();
+</script>
