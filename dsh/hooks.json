@@ -1,10 +1,28 @@
 {
   "hooks": {
     "PreToolUse": [
-      { "matcher": "Edit|Write|edit|write",
-        "hooks": [{ "type": "command", "command": "${CLAUDE_PLUGIN_ROOT}/templates/.claude/hooks/bloqueia-segredos.sh" }] },
-      { "matcher": "Bash|bash",
-        "hooks": [{ "type": "command", "command": "${CLAUDE_PLUGIN_ROOT}/templates/.claude/hooks/bloqueia-comandos.sh" }] }
+      {
+        "matcher": "Edit|Write|edit|write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${CLAUDE_PLUGIN_ROOT}/templates/.claude/hooks/bloqueia-segredos.sh"
+          }
+        ]
+      },
+      {
+        "matcher": "Bash|bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${CLAUDE_PLUGIN_ROOT}/templates/.claude/hooks/bloqueia-comandos.sh"
+          },
+          {
+            "type": "command",
+            "command": "${CLAUDE_PLUGIN_ROOT}/templates/.claude/hooks/valida-issue.sh"
+          }
+        ]
+      }
     ]
   }
 }

@@ -1,6 +1,6 @@
 ---
 name: security-audit
-description: Threat-model and audit a codebase, commit range, or pull request for exploitable vulnerabilities, prompt and data injection, authentication or authorization bypass, tenant-data exposure, privilege escalation, malicious code/backdoors, unsafe execution, secrets leakage, supply-chain and CI compromise, insecure persistence, and denial of service. Use for dedicated security reviews, release gates, suspicious contributions, or requests to verify that a project protects users and their data.
+description: Threat model e auditoria de segurança de código, commit ou PR: vulnerabilidade explorável, injeção, bypass de auth, vazamento de dados/segredos, backdoor, supply chain, DoS. Use em revisão de segurança dedicada, gate de release ou contribuição suspeita; não em todo diff (o revisor já cobre o básico).
 ---
 
 # Security Audit

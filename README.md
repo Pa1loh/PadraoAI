@@ -11,6 +11,8 @@ Depois diga ao agente: **"leia docs/padraoai/ADOTAR.md e adote o padrão"**. Ou,
 ## Mapa
 | Arquivo | Para quê |
 |---|---|
+| `bin/` | `padraoai init \| agents \| engines`, `lint-contexto` (regra de contexto no CI), `dsh-setup` |
+| `docs/` | benchmarks locais com data (hooks por engine, custo de contexto) |
 | `inegociaveis.md` | 17 regras duras: regra, porquê, enforcement |
 | `ADOTAR.md` | roteiro de adoção + checklist de verificação |
 | `LEIA-ME-AGENTE.md` | porta de entrada para o agente |

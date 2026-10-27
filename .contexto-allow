@@ -1,0 +1,4 @@
+# Exceções ao lint-contexto (inegociáveis 10 e 11). Formato: <skill> <motivo>. Cada exceção é dívida visível.
+security-audit vendorizada (343 linhas) e já delega a references/; carga só sob demanda, fora da lista de skills do revisor
+worktrees vendorizada (oh-my-opencode-slim); carga só sob demanda
+ai-memory-retrieval gerenciada pelo ai-memory (marcador ai-memory-managed); reescrita ao reinstalar o roteamento

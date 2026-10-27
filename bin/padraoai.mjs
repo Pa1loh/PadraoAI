@@ -3,11 +3,15 @@
 import { cpSync, existsSync, mkdirSync, readdirSync, statSync, copyFileSync } from 'node:fs';
 import { join, dirname, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { execFileSync } from 'node:child_process';
+import { readFileSync } from 'node:fs';
 import { sincronizar } from './agents-sync.mjs';
+import { lerEngines, resolver } from './engines.mjs';
+import { iniciar } from './engines-ui.mjs';
 
 const raiz = join(dirname(fileURLToPath(import.meta.url)), '..');
 const destino = process.cwd();
-const [cmd] = process.argv.slice(2);
+const [cmd, ...resto] = process.argv.slice(2);
 
 function copiar(origem, base = origem, criados = [], pulados = []) {
   for (const nome of readdirSync(origem)) {
@@ -28,8 +32,23 @@ if (cmd === 'agents') {
   console.log(`Papéis gerados/atualizados (${gerados.length}):\n  ${gerados.join('\n  ')}`);
   process.exit(0);
 }
-if (cmd !== 'init') {
-  console.log('Uso: npx github:Pa1loh/PadraoAI init | agents');
+if (cmd === 'engines') {
+  const plano = resto[0] === 'plano';
+  const arquivo = join(destino, resto.find((x, i) => !x.startsWith('--') && !(i === 0 && plano) && resto[i - 1] !== '--porta') ?? 'docs/engines.yml');
+  if (!existsSync(arquivo)) { console.error(`Sem ${arquivo}. Rode \`init\` ou copie templates/docs/engines.yml.`); process.exit(1); }
+  if (plano) {
+    const e = lerEngines(readFileSync(arquivo, 'utf8'));
+    console.log(`perfil: ${e.perfil}  indisponivel: ${e.indisponivel.join(', ') || '-'}`);
+    for (const l of resolver(e)) console.log(`${l.papel.padEnd(10)} ${String(l.engine).padEnd(8)} ${l.modelo} ${l.esforco}  (${l.via})`);
+    process.exit(0);
+  }
+  const porta = Number(resto[resto.indexOf('--porta') + 1]) || 4317;
+  const { url } = await iniciar(arquivo, porta);
+  console.log(`Editor do engines.yml: ${url}\nCtrl+C para sair.`);
+  if (resto.includes('--abrir')) for (const abre of ['omarchy-launch-webapp', 'xdg-open']) { try { execFileSync(abre, [url], { stdio: 'ignore' }); break; } catch { /* tenta o próximo */ } }
+  await new Promise(() => {}); // segura o processo (e não cai no init) até Ctrl+C
+} else if (cmd !== 'init') {
+  console.log('Uso: npx github:Pa1loh/PadraoAI init | agents | engines [plano] [arquivo] [--porta N] [--abrir]');
   process.exit(cmd ? 1 : 0);
 }
 const { criados, pulados } = copiar(join(raiz, 'templates'));
