@@ -1,0 +1,41 @@
+name: Tarefa para agente
+description: Issue escrita para um agente executar (curta, um PR, critério de pronto verificável)
+title: "<verbo> <objeto> em <componente>"
+body:
+  - type: textarea
+    id: problema
+    attributes:
+      label: Problema
+      description: O observado, separado de hipótese de causa. Bug - como reproduzir em até 3 linhas.
+    validations:
+      required: true
+  - type: textarea
+    id: esperado
+    attributes:
+      label: Comportamento esperado
+      description: Um exemplo concreto (entrada → saída) e os casos de borda.
+    validations:
+      required: true
+  - type: textarea
+    id: pronto
+    attributes:
+      label: Critério de pronto
+      description: Checklist verificável e o comando de teste. Bug - teste Regressao_Issue{N}_... vermelho primeiro.
+    validations:
+      required: true
+  - type: textarea
+    id: onde
+    attributes:
+      label: Onde mexer
+      description: Arquivos e símbolos (nomes que dão grep), teste de referência, e o que NÃO tocar.
+    validations:
+      required: true
+  - type: textarea
+    id: externo
+    attributes:
+      label: Contexto externo
+      description: Fatos da doc externa com a fonte. Cole o fato, não só o link.
+  - type: textarea
+    id: fora
+    attributes:
+      label: Fora de escopo

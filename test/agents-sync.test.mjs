@@ -59,6 +59,25 @@ test('skill /issue ensina o caminho do dsh: subagent genérico com o papel e arg
   assert.match(s, /dsh[^\n]*mensagem|mensagem[^\n]*dsh/i, 'sem substituição de $ARGUMENTS, o argumento está na mensagem');
 });
 
+test('/issue-criar é distribuída nos dois catálogos, explícita no Claude e invocável pelo modelo no dsh', () => {
+  assert.match(ler('.claude/skills/issue-criar/SKILL.md'), /^disable-model-invocation: true/m);
+  const s = ler('.agents/skills/issue-criar/SKILL.md');
+  assert.doesNotMatch(s, /^disable-model-invocation: true/m);
+  for (const palavra of ['analista', 'Critério de pronto', 'Onde mexer', 'gh issue create', 'sim']) assert.match(s, new RegExp(palavra));
+});
+
+test('/issue tem portão de issue pronta, padrão solo, engines.yml e registro por issue', () => {
+  const s = ler('.claude/skills/issue/SKILL.md');
+  for (const palavra of ['solo', 'docs/engines.yml', 'Portão', 'docs/agent-log.md']) assert.match(s, new RegExp(palavra));
+});
+
+test('templates: engines.yml cobre os papéis e o form da issue exige as seções-chave', () => {
+  const engines = readFileSync(join(raiz, 'templates/docs/engines.yml'), 'utf8');
+  for (const papel of ['issue', 'analista', 'dev', 'revisor']) assert.match(engines, new RegExp(`^  ${papel}:`, 'm'));
+  const form = readFileSync(join(raiz, 'templates/.github/ISSUE_TEMPLATE/tarefa-agente.yml'), 'utf8');
+  for (const id of ['problema', 'esperado', 'pronto', 'onde']) assert.match(form, new RegExp(`id: ${id}\\n(?:.*\\n)+?    validations:\\n      required: true`));
+});
+
 test('init não sobrescreve papel já customizado no projeto', () => {
   const alvo = join(projeto, '.claude/agents/revisor.md');
   writeFileSync(alvo, 'meu revisor customizado');

@@ -6,6 +6,7 @@ description: Corrigir bug com teste de regressão primeiro (vermelho → fix →
 # Bug = teste de regressão primeiro
 
 1. **Reproduzir pelo sintoma**, não pelo palpite de causa. Ler a issue; separar o observado do diagnosticado.
+   Causa não óbvia? Liste até 3 hipóteses, da mais à menos provável, cada uma com o comando, log ou teste que a confirma. Não mude código até confirmar a causa.
 2. **Escrever o teste vermelho** `Regressao_Issue{N}_<comportamento>` no nível mais baixo que reproduz. Rodar e **ver falhar pelo motivo certo** (colar a saída).
 3. **Corrigir a causa-raiz**, mínimo de código. Não suprimir o erro nem afrouxar o teste.
 4. Rodar o teste novo, depois a suíte inteira. Colar a saída verde.
