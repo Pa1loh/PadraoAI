@@ -13,4 +13,5 @@ jobs:
           node-version: 22
       - run: sudo apt-get install -y jq
       - run: node bin/lint-contexto.mjs
+      - run: node docs/guia-de-desenvolvimento/checar.mjs
       - run: npm test
