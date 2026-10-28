@@ -21,4 +21,6 @@ Instalados no PC e usados por projeto (ex.: AfonsoV2 liga no `.claude/settings.j
 - unityMCP (só FarmRoguelike, que já tem `.mcp.json`): URL `http://127.0.0.1:8080/mcp`
 - cloudflare / vercel / supabase: já estão no escopo de projeto em `~/.claude.json`.
 - GitHub: usar `gh` (CLI) em vez de MCP. Token **nunca** em config: só variável de ambiente.
+- Penpot (PC do mantenedor, já no ar, com MCP): só em projeto com UI. No AfonsoV2, só se a issue for o WebAdmin. Não é global.
+- Blender (`/home/paulo/blender-mcp` no PC `100.122.231.113`): só em projeto que gera asset 3D. Não é global.
 - Antigravity: MCP por projeto em `.gemini/` / `mcp_config.json` do projeto; global só ai-memory.

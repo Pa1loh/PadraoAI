@@ -2,6 +2,7 @@
 
 > Documento de referência para análise de padrões de infra, AI tooling e CI/CD.
 > Gerado a partir dos projetos `AfonsoV2` e `imobiflow-crm`.
+> O mapa vivo das máquinas (PC, Orange Pi, discos, GPU) está em `extras/infra-pessoal/INFRA.md`. Este arquivo é um retrato antigo de stacks: a seção de hardware abaixo não manda mais. O PadraoAI é open source; o homelab é pessoal e não se replica.
 
 ---
 

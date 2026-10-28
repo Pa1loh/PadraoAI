@@ -15,7 +15,7 @@ A issue é o prompt do agente que vai executá-la: escreva para ele entender soz
    - **Critério de pronto:** checklist verificável e o comando de teste. Bug: teste `Regressao_Issue{N}_...` vermelho primeiro.
    - **Onde mexer:** arquivos e símbolos (nomes que dão `grep`), teste de referência, e **o que não tocar**.
    - **Contexto externo:** fatos da doc e a fonte.
-   - **Direção da solução:** curta e opcional.
+   - **Direção da solução:** curta e opcional. Se o projeto for do mantenedor e a issue encostar em banco, mídia, UI, 3D ou API paga de texto/voz, uma frase apontando a oportunidade em `extras/infra-pessoal/INFRA.md` do PadraoAI (backup no PC, GPU local, Penpot, Blender). Não vira critério de pronto e não entra em projeto de terceiro.
    - **Fora de escopo.**
 5. Use a engine forte do papel `issue` em `docs/engines.yml`, se existir: escrever bem custa menos que executar mal.
 6. Mostre título e corpo e espere o "sim". Só então `gh issue create --title ... --body-file <arquivo>` (label `bug` ou `feature` se existir). Sem `gh` ou remote, entregue o texto e pare.
