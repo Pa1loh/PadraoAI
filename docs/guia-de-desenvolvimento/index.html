@@ -68,6 +68,7 @@
     <li><a href="#catalogo">catálogo</a></li>
     <li><a href="#estado">estado</a></li>
     <li><a href="#fontes">fontes</a></li>
+    <li><a href="#duvidas">dúvidas</a></li>
   </ul>
 </nav>
 <main>
@@ -297,6 +298,20 @@ npx github:Pa1loh/PadraoAI engines --abrir        # no projeto: edita docs/engin
       <tr><td><a href="../../mcp/global.md"><code>mcp/global.md</code></a></td><td>MCPs usados e onde.</td></tr>
       <tr><td><a href="../../docs/benchmark-2026-10-27.md"><code>docs/benchmark-2026-10-27.md</code></a></td><td>Benchmarks locais com data.</td></tr>
       <tr><td><a href="https://github.com/Pa1loh/PadraoAI">github.com/Pa1loh/PadraoAI</a></td><td>Issues, PRs e CI. ADRs, épicos e milestones: <b>a definir</b> (ainda não existem).</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section id="duvidas">
+  <h2>Dúvidas futuras</h2>
+  <p class="mut">O que o guia marca como <b>a definir</b>: falta decisão do mantenedor. Respondeu? Mova a resposta para a seção certa (ou um ADR) e apague o item aqui no mesmo PR.</p>
+  <div class="tabela"><table>
+    <thead><tr><th>Dúvida</th><th>Onde impacta</th></tr></thead>
+    <tbody>
+      <tr id="duvida-versionamento"><td>Quando sair da 0.1.0? Vai ter changelog ou tag? O que conta como quebra para quem já adotou (mudar template, renomear arquivo em <code>rules/</code>)?</td><td><a href="#superficie-publica">superfície pública</a></td></tr>
+      <tr id="duvida-lgpd"><td>Existe política de LGPD e dados de terceiros para este repo além do inegociável 5?</td><td><a href="#pode-nao-pode">pode / não pode</a></td></tr>
+      <tr id="duvida-adr"><td>Criar <code class="ext">docs/adr/</code> neste repo? Hoje não há ADRs, épicos nem milestones.</td><td><a href="#fontes">fontes</a></td></tr>
+      <tr id="duvida-dados-pessoais"><td><code>CATALOGO-SOB-DEMANDA.md</code> (público) cita um IP da rede do mantenedor e caminhos de home. Tirar de lá e deixar só em <code>extras/infra-pessoal/</code>?</td><td><a href="#pode-nao-pode">pode / não pode</a></td></tr>
     </tbody>
   </table></div>
 </section>
