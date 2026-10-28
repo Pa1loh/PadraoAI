@@ -3,12 +3,13 @@
 //   Claude Code  → .claude/agents/<n>.md        (tools/disallowedTools reais)
 //   Antigravity  → .agents/agents/<n>.md        (model flash|pro; subagent nativo)
 //   dsh-tui etc. → .agents/skills/papel-<n>/    (SKILL.md: lido por dsh, agy e claude)
-//   + skills /issue e /issue-criar em .claude/skills e .agents/skills. O dev não é agent: é a sessão da aba.
+//   + skills /issue, /issue-criar e /proximas em .claude/skills e .agents/skills.
+//   O dev de issue avulsa é a sessão da aba; o agent dev existe só para o lote paralelo do /proximas (worktree própria).
 import { readdirSync, readFileSync, writeFileSync, mkdirSync, existsSync } from 'node:fs';
 import { join, dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-const SKILLS_DE_FLUXO = ['issue', 'issue-criar'];
+const SKILLS_DE_FLUXO = ['issue', 'issue-criar', 'proximas'];
 const MODELO_AGY ={ haiku: 'flash', sonnet: 'pro', opus: 'pro', inherit: 'inherit' };
 
 export function lerAgente(texto) {
@@ -28,7 +29,7 @@ export function gerar({ meta, corpo }) {
   const texto = corpo + linhaSkills(meta) + '\n';
   const n = meta.name;
   return {
-    [`.claude/agents/${n}.md`]: fm({ name: n, description: meta.description, model: meta.model, tools: meta.tools, disallowedTools: meta.disallowedTools }) + texto,
+    [`.claude/agents/${n}.md`]: fm({ name: n, description: meta.description, model: meta.model, tools: meta.tools, disallowedTools: meta.disallowedTools, isolation: meta.isolation }) + texto,
     [`.agents/agents/${n}.md`]: fm({ name: n, description: meta.description, model: MODELO_AGY[meta.model] ?? 'inherit' }) + texto,
     [`.agents/skills/papel-${n}/SKILL.md`]: fm({ name: `papel-${n}`, description: `Assuma o papel ${n}. ${meta.description}` })
       + `${texto}\nLimites do papel (acesso: ${meta.acesso}): ferramentas permitidas = ${meta.tools}; proibidas = ${meta.disallowedTools ?? 'nenhuma'}. Respeite mesmo que a ferramenta não imponha.\n`,

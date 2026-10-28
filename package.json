@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "description": "Padrão de desenvolvimento com IA (XP/TDD/segurança/economia de tokens) para adotar em qualquer projeto",
   "bin": { "padraoai": "bin/padraoai.mjs" },
-  "files": ["bin", "agents", "templates", "dsh", "skills/issue", "skills/issue-criar", "inegociaveis.md", "ADOTAR.md", "LEIA-ME-AGENTE.md"],
+  "files": ["bin", "agents", "templates", "dsh", "skills/issue", "skills/issue-criar", "skills/proximas", "inegociaveis.md", "ADOTAR.md", "LEIA-ME-AGENTE.md"],
   "scripts": { "test": "node --test test/", "lint:contexto": "node bin/lint-contexto.mjs" },
   "license": "MIT",
   "type": "module"
