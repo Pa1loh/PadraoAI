@@ -20,7 +20,7 @@ Depois diga ao agente: **"leia docs/padraoai/ADOTAR.md e adote o padrão"**. Ou,
 | `templates/` | exemplos copiados pelo `init` (adapte, não cole cego): AGENTS.md, templates de PR/issue, `docs/engines.yml` (engine por papel) e `docs/agent-log.md` (registro por issue) |
 | `rules/` | clean-architecture, tdd-protocol, clean-code-agents, dotnet-10 |
 | `skills/` | núcleo: adotar-padrao, issue-criar, tdd-regressao, pr-audit, release, validate-agent-config, security-audit, sonarqube, worktrees, agent-browser, ai-memory-* |
-| `extras/` | opcional: design, vídeo (watch), 3dprint, unity, humanizer, aliexpress, exemplos de infra/agents |
+| `extras/` | opcional: design, vídeo (watch), 3dprint, unity, humanizer, aliexpress, exemplos de infra/agents. `extras/infra-pessoal/` é homelab do mantenedor, não parte do padrão |
 | `mcp/` | MCPs usados e quando |
 
 Referências: Akita (akitaonrails.com, ailair), pedrosatin/skills, docs do Claude Code, arXiv 2602.11988.

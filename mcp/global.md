@@ -5,6 +5,7 @@ Conectores do claude.ai (Claude Docs, MercadoLibre) vêm da conta, não do repo.
 GitHub: use `gh`, não MCP. Token nunca em config, só variável de ambiente.
 
 Por projeto (ver `CATALOGO-SOB-DEMANDA.md`): sonarqube, watch-skill, ender3, unityMCP, cloudflare/vercel/supabase.
+Penpot e Blender não são globais. Os dois MCPs moram no PC do mantenedor (`extras/infra-pessoal/INFRA.md`): Penpot só no projeto com UI, Blender só quando a issue pede asset 3D. AfonsoV2 não liga Penpot.
 Quem acessa o quê por papel: `agents/README.md`.
 
 dsh-tui: MCP entra no `~/.dsh/profiles/dsh-tui/cordis.patch.yml` via `@deepseek-ai/dsh-mcp-client` (stdio ou HTTP).

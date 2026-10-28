@@ -47,5 +47,5 @@ Hotfix não é agent: é a sessão da issue com branch de `master`, teste de reg
 - Uma frente escreve; as demais leem. Revisor em contexto limpo e só sobre correção/requisito.
 - Subagents não criam subagents. Resultado longo vai para arquivo; devolve resumo + caminho.
 - Skills/MCP/plugins de projeto ligam por projeto (`CATALOGO-SOB-DEMANDA.md`).
-- Hosts, comandos permitidos e script de deploy ficam no `AGENTS.md` do projeto.
+- Hosts, comandos permitidos e script de deploy ficam no `AGENTS.md` do projeto. O homelab do mantenedor está em `extras/infra-pessoal/INFRA.md`: o PadraoAI é open source, e esse arquivo é pessoal, fora do padrão que se adota.
 - Projeto que já tem `.claude/settings.json`: o `init` não sobrescreve. Some à mão o hook `bloqueia-comandos.sh` (matcher `Bash`).

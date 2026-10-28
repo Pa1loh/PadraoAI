@@ -19,6 +19,7 @@ Para criar a issue, rode `/issue-criar`: escreve para agente (exemplo, critério
 Na aba da issue rode `/issue <nº>`: ele cria a branch, chama o analista (obrigatório se houver API/doc externa), faz TDD, chama o revisor e abre o PR. Merge e deploy são do usuário.
 `infra` e `deploy` só em sessão própria (`claude --agent infra|deploy`), com aprovação humana para mudar estado.
 - Hosts e comandos que `infra` pode usar: `<ex.: ssh user@host; docker ps/logs>`
+- Não copie `extras/infra-pessoal/` do PadraoAI. O repositório é open source; aquele homelab é pessoal do mantenedor.
 - Script de deploy e healthcheck: `<comando>`
 - Não use `@import` neste arquivo: Antigravity e dsh leem o texto literal.
 
