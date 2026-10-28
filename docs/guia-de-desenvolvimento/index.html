@@ -1,0 +1,366 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Guia de desenvolvimento · PadraoAI</title>
+<!-- Documento interno. Mudou regra, fluxo, convenção ou comando? Atualize a seção aqui no mesmo PR e rode `npm run guia:check`.
+     <code class="ext"> = caminho de outro lugar (projeto que adota, máquina); o resto é checado contra o repo. -->
+<style>
+  /* Identidade do produto: a mesma paleta escura e monoespaçada do editor bin/engines-ui.html. */
+  :root { color-scheme: dark; --bg:#0d1117; --card:#161b22; --card2:#1c2330; --linha:#30363d; --txt:#e6edf3; --mut:#8b949e;
+    --ok:#3fb950; --erro:#f85149; --aviso:#d29922; --acento:#58a6ff; --acento2:#a371f7;
+    --mono: ui-monospace, SFMono-Regular, "JetBrains Mono", Menlo, Consolas, monospace;
+    --sans: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+  * { box-sizing:border-box; }
+  html { scroll-behavior:smooth; scroll-padding-top:96px; }
+  body { margin:0; background:var(--bg); color:var(--txt); font:15px/1.6 var(--sans); }
+  .faixa { background:var(--aviso); color:#000; text-align:center; font:600 12px/1 var(--mono); padding:6px; letter-spacing:.06em; }
+  nav { position:sticky; top:0; z-index:10; background:rgba(13,17,23,.94); backdrop-filter:blur(6px); border-bottom:1px solid var(--linha); }
+  nav ul { list-style:none; margin:0 auto; padding:8px 16px; max-width:1100px; display:flex; gap:4px 14px; flex-wrap:wrap; font:13px var(--mono); }
+  nav a { color:var(--mut); text-decoration:none; } nav a:hover { color:var(--acento); }
+  main { max-width:1100px; margin:auto; padding:0 16px 80px; }
+  section { padding-top:40px; }
+  h1 { font:700 40px/1.1 var(--mono); margin:0; } h2 { font:700 22px var(--mono); margin:0 0 12px; border-bottom:1px solid var(--linha); padding-bottom:6px; }
+  h3 { font:600 15px var(--mono); margin:20px 0 8px; color:var(--acento); }
+  a { color:var(--acento); } p { max-width:80ch; }
+  code { font:13px var(--mono); background:var(--card2); border:1px solid var(--linha); border-radius:4px; padding:0 4px; }
+  pre { background:var(--card); border:1px solid var(--linha); border-radius:8px; padding:12px; overflow-x:auto; }
+  pre code { border:0; background:none; padding:0; }
+  .mut { color:var(--mut); } .ok { color:var(--ok); } .erro { color:var(--erro); } .aviso { color:var(--aviso); }
+  .heroi { padding:48px 0 8px; } .heroi p { font-size:18px; color:var(--mut); }
+  .chips { display:flex; flex-wrap:wrap; gap:8px; margin-top:16px; }
+  .chip { font:13px var(--mono); border:1px solid var(--linha); background:var(--card); border-radius:999px; padding:4px 12px; }
+  .chip b { color:var(--acento); }
+  .grade { display:grid; gap:12px; grid-template-columns:repeat(auto-fill, minmax(240px, 1fr)); }
+  .cartao { background:var(--card); border:1px solid var(--linha); border-radius:10px; padding:14px; transition:box-shadow .3s, border-color .3s; }
+  .cartao h4 { margin:0 0 6px; font:600 14px var(--mono); } .cartao p { margin:0; font-size:14px; }
+  .num { font:700 26px var(--mono); color:var(--acento2); }
+  .tabela { overflow-x:auto; border:1px solid var(--linha); border-radius:8px; }
+  table { width:100%; border-collapse:collapse; font-size:14px; }
+  th,td { text-align:left; padding:8px 10px; border-bottom:1px solid var(--linha); vertical-align:top; }
+  th { background:var(--card); color:var(--mut); font-weight:600; } tr:last-child td { border-bottom:0; }
+  .duas { display:grid; gap:12px; grid-template-columns:repeat(auto-fit, minmax(300px, 1fr)); }
+  .pode { border-left:3px solid var(--ok); } .naopode { border-left:3px solid var(--erro); }
+  .cartao ul { margin:6px 0 0; padding-left:18px; font-size:14px; }
+  .mapa { display:grid; gap:10px; grid-template-columns:1fr auto 1fr auto 1fr; align-items:stretch; }
+  .seta { align-self:center; color:var(--mut); font:20px var(--mono); }
+  @media (max-width:760px) { .mapa { grid-template-columns:1fr; } .seta { transform:rotate(90deg); justify-self:center; } h1 { font-size:30px; } }
+  .tag { font:11px var(--mono); border-radius:4px; padding:1px 6px; border:1px solid var(--linha); color:var(--mut); }
+  .tag.pub { color:var(--ok); border-color:var(--ok); }
+  .aviso-box { border:1px dashed var(--aviso); border-radius:8px; padding:12px; color:var(--aviso); }
+  .destaque { border-color:var(--acento) !important; box-shadow:0 0 0 3px rgba(88,166,255,.35); background:var(--card2); }
+  tr.destaque td { background:var(--card2); }
+</style>
+</head>
+<body>
+<div class="faixa">DOCUMENTO INTERNO DO TIME · resume e aponta; ADR, código e os .md do repo vencem em caso de divergência</div>
+<nav aria-label="Seções">
+  <ul>
+    <li><a href="#inicio">início</a></li>
+    <li><a href="#em-30-segundos">30s</a></li>
+    <li><a href="#dominio">domínio</a></li>
+    <li><a href="#arquitetura">arquitetura</a></li>
+    <li><a href="#regras">regras</a></li>
+    <li><a href="#pode-nao-pode">pode/não pode</a></li>
+    <li><a href="#como-fazer">como fazer</a></li>
+    <li><a href="#superficie-publica">superfície pública</a></li>
+    <li><a href="#catalogo">catálogo</a></li>
+    <li><a href="#estado">estado</a></li>
+    <li><a href="#fontes">fontes</a></li>
+    <li><a href="#duvidas">dúvidas</a></li>
+  </ul>
+</nav>
+<main>
+
+<section id="inicio" class="heroi">
+  <h1>PadraoAI</h1>
+  <p>Padrão de desenvolvimento com IA (XP, TDD, segurança, economia de tokens) para adotar em qualquer projeto: regras curtas com o porquê, um time de papéis para Claude Code, Antigravity e dsh, e hooks que tornam as regras reais. Para quem mantém o padrão e para o agente que trabalha neste repo.</p>
+  <div class="chips">
+    <span class="chip"><b>v0.1.0</b> · Node 22, ESM, zero dependências</span>
+    <span class="chip"><b>17</b> inegociáveis</span>
+    <span class="chip"><b>5</b> papéis × <b>3</b> CLIs</span>
+    <span class="chip">distribuído por <b>npx github:</b> (sem npm registry)</span>
+    <span class="chip">CI: <b>lint-contexto + npm test</b></span>
+  </div>
+  <p class="mut">Fontes: <code>package.json</code>, <code>inegociaveis.md</code>, <code>agents/</code>, <code>LEIA-ME-AGENTE.md</code>, <code>.github/workflows/ci.yml</code>.</p>
+</section>
+
+<section id="em-30-segundos">
+  <h2>O projeto em 30 segundos</h2>
+  <div class="grade">
+    <div class="cartao" id="passo-1"><div class="num">1</div><h4>Instala</h4><p><code class="ext">npx github:Pa1loh/PadraoAI init</code> copia <code>templates/</code> sem sobrescrever, gera os papéis e põe <code>inegociaveis.md</code> + <code>ADOTAR.md</code> em <code class="ext">docs/padraoai/</code> (<code>bin/padraoai.mjs</code>).</p></div>
+    <div class="cartao" id="passo-2"><div class="num">2</div><h4>Adota</h4><p>O agente segue <code>ADOTAR.md</code>: <code class="ext">AGENTS.md</code> ≤120 linhas como fonte única, hooks, CI, ADRs. Verifica com evidência.</p></div>
+    <div class="cartao" id="passo-3"><div class="num">3</div><h4>Escreve a issue</h4><p><code class="ext">/issue-criar</code> escreve issue pronta para agente; o hook <code>templates/.claude/hooks/valida-issue.sh</code> barra issue sem as seções.</p></div>
+    <div class="cartao" id="passo-4"><div class="num">4</div><h4>Executa</h4><p><code class="ext">/issue N</code>: branch → analista → plano → TDD → revisor → PR. Ou <code class="ext">/proximas</code>: lote de até 3 em worktrees. Merge e deploy são humanos.</p></div>
+    <div class="cartao" id="passo-5"><div class="num">5</div><h4>Kaizen</h4><p>Falha do agente vira teste, hook, linha no AGENTS.md ou ADR (inegociável 17); <code>templates/docs/agent-log.md</code> registra engine e custo por issue.</p></div>
+  </div>
+</section>
+
+<section id="dominio">
+  <h2>Glossário do domínio</h2>
+  <div class="tabela"><table>
+    <thead><tr><th>Termo</th><th>Significado</th><th>Onde vive</th></tr></thead>
+    <tbody>
+      <tr id="termo-inegociavel"><td>Inegociável</td><td>Regra dura: regra → por quê → como é imposta. Texto é conselho; o que importa vira hook/CI.</td><td><code>inegociaveis.md</code></td></tr>
+      <tr id="termo-papel"><td>Papel</td><td>Agente com ferramentas e acesso definidos (analista, dev, revisor, infra, deploy). Fonte única; gerado para os 3 CLIs.</td><td><code>agents/*.md</code> → <code>bin/agents-sync.mjs</code></td></tr>
+      <tr id="termo-sessao-da-issue"><td>Sessão da issue</td><td>A aba/worktree normal que orquestra e programa uma issue avulsa. Não existe agent <code class="ext">dev</code> para issue avulsa.</td><td><code>agents/README.md</code></td></tr>
+      <tr id="termo-skill"><td>Skill (núcleo)</td><td>Workflow invocável sob demanda. Núcleo = o que o padrão usa sempre.</td><td><code>skills/</code></td></tr>
+      <tr id="termo-extra"><td>Extra</td><td>Skill ou exemplo opcional (design, vídeo, 3D…). Não faz parte do que se adota.</td><td><code>extras/</code></td></tr>
+      <tr id="termo-catalogo"><td>Catálogo sob demanda</td><td>Skills/plugins/MCPs ficam fora do global e ligam por projeto, porque o global entra em toda sessão.</td><td><code>CATALOGO-SOB-DEMANDA.md</code>, <code>bin/skill-on</code></td></tr>
+      <tr id="termo-rule"><td>Rule</td><td>Regra genérica importada por projetos (<code class="ext">@~/.claude/shared/rules/…</code>).</td><td><code>rules/</code></td></tr>
+      <tr id="termo-template"><td>Template</td><td>Exemplo comentado copiado pelo <code class="ext">init</code>. Adapte, não cole cego.</td><td><code>templates/</code></td></tr>
+      <tr id="termo-hook"><td>Hook (portão)</td><td>Script PreToolUse; saída 2 bloqueia e explica. Determinístico, vale em qualquer modo de permissão (menos <code class="ext">claude --bare</code>).</td><td><code>templates/.claude/hooks/</code>, <code>dsh/hooks.json</code></td></tr>
+      <tr id="termo-engine"><td>Engine / perfil / tier</td><td>Qual CLI+modelo faz cada papel; perfil economico|base|qualidade escolhe o tier; <code class="ext">indisponivel</code> e <code class="ext">fallback</code> trocam engine; <code class="ext">outra_familia</code> põe o revisor em família diferente da do dev. É recomendação, não ordem.</td><td><code>templates/docs/engines.yml</code>, <code>bin/engines.mjs</code></td></tr>
+      <tr id="termo-issue-pronta"><td>Issue pronta para agente</td><td>Tem Problema, Comportamento esperado, Critério de pronto e Onde mexer, ≤400 palavras.</td><td><code>skills/issue-criar/SKILL.md</code>, <code>templates/.github/ISSUE_TEMPLATE/tarefa-agente.yml</code></td></tr>
+      <tr id="termo-lote"><td>Lote</td><td>Issues que rodam em paralelo: escopos disjuntos, sem arquivo compartilhado, sem dependência, teto 3.</td><td><code>skills/proximas/SKILL.md</code></td></tr>
+      <tr id="termo-lint-contexto"><td>lint-contexto</td><td>Checa no CI o tamanho do que entra no contexto (AGENTS.md, skills, papéis). Exceção só com motivo.</td><td><code>bin/lint-contexto.mjs</code>, <code>.contexto-allow</code></td></tr>
+      <tr id="termo-clis"><td>Claude Code · agy · dsh</td><td>Os 3 CLIs suportados. agy = Antigravity; dsh = DeepSeek (dsh-tui/headless). Só o Claude impõe <code class="ext">tools</code> por papel.</td><td><code>agents/README.md</code></td></tr>
+      <tr id="termo-ai-memory"><td>ai-memory</td><td>Único MCP global: memória de sessão e handoff. Nunca arquivo paralelo de memória.</td><td><code>mcp/global.md</code>, <code>skills/ai-memory-retrieval/SKILL.md</code></td></tr>
+      <tr id="termo-infra-pessoal"><td>infra-pessoal</td><td>Homelab do mantenedor. Pessoal, fora do padrão, nunca copiado para quem adota.</td><td><code>extras/infra-pessoal/INFRA.md</code></td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section id="arquitetura">
+  <h2>Mapa</h2>
+  <div class="mapa">
+    <div class="cartao"><h4>Fonte (este repo)</h4><ul>
+      <li><code>inegociaveis.md</code>, <code>ADOTAR.md</code></li>
+      <li><code>agents/</code> (papéis)</li>
+      <li><code>skills/</code>, <code>extras/</code>, <code>rules/</code></li>
+      <li><code>templates/</code>, <code>dsh/hooks.json</code></li></ul></div>
+    <div class="seta">→</div>
+    <div class="cartao"><h4>CLI <code>bin/padraoai.mjs</code></h4><ul>
+      <li><code class="ext">init</code>: copia sem sobrescrever</li>
+      <li><code class="ext">agents</code>: <code>bin/agents-sync.mjs</code></li>
+      <li><code class="ext">engines</code>: <code>bin/engines.mjs</code> + <code>bin/engines-ui.mjs</code></li>
+      <li><code>bin/dsh-setup.mjs</code>: hooks no dsh (1×/máquina)</li></ul></div>
+    <div class="seta">→</div>
+    <div class="cartao"><h4>Projeto que adota</h4><ul>
+      <li><code class="ext">AGENTS.md</code> + ponteiros <code class="ext">CLAUDE.md</code>/<code class="ext">GEMINI.md</code></li>
+      <li><code class="ext">.claude/agents/</code>, <code class="ext">.claude/skills/</code>, <code class="ext">.claude/hooks/</code></li>
+      <li><code class="ext">.agents/agents/</code>, <code class="ext">.agents/skills/papel-*</code></li>
+      <li><code class="ext">docs/padraoai/</code>, <code class="ext">docs/engines.yml</code>, <code class="ext">docs/agent-log.md</code></li></ul></div>
+  </div>
+  <p class="mut">Projetos do mantenedor também importam <code>rules/</code> pelo symlink <code class="ext">~/.claude/shared</code> → este repo (instruções globais do mantenedor, fora do repo). Renomear arquivo em <code>rules/</code> quebra esses imports.</p>
+  <h3>Dependências externas</h3>
+  <p>Node 22 (CI), <code class="ext">jq</code> (os hooks leem o JSON do PreToolUse; o CI instala), <code class="ext">gh</code> autenticado (issues/PRs; o padrão prefere CLI a MCP), os CLIs Claude Code / <code class="ext">agy</code> / <code class="ext">dsh</code>, MCP ai-memory, e opcionalmente o catálogo de modelos do Orca (<code class="ext">~/.config/orca/agent-model-catalog.json</code>, lido por <code>bin/engines-ui.mjs</code>).</p>
+  <h3>Invariantes</h3>
+  <div class="tabela"><table>
+    <thead><tr><th>Nunca pode quebrar</th><th>Por quê</th><th>Fonte</th></tr></thead>
+    <tbody>
+      <tr id="inv-init"><td><code class="ext">init</code> e <code class="ext">agents</code> no init nunca sobrescrevem arquivo existente</td><td>O projeto customiza o que recebeu; sobrescrever apaga trabalho dele.</td><td><code>bin/padraoai.mjs</code>, teste "init não sobrescreve papel" em <code>test/agents-sync.test.mjs</code></td></tr>
+      <tr id="inv-hooks-iguais"><td>Todo hook do Claude também está no dsh</td><td>Nenhuma engine fica sem portão.</td><td><code>templates/.claude/settings.json</code>, <code>dsh/hooks.json</code>, teste em <code>test/agents-sync.test.mjs</code></td></tr>
+      <tr id="inv-sem-skills-frontmatter"><td>Papel gerado não pré-carrega skill (<code class="ext">skills:</code> fora do frontmatter)</td><td><code class="ext">skills:</code> injeta a skill inteira a cada chamada (inegociável 10).</td><td><code>bin/agents-sync.mjs</code>, <code>test/lint-contexto.test.mjs</code></td></tr>
+      <tr id="inv-escritor-unico"><td>Só o <code class="ext">dev</code> (na própria worktree) e a sessão da issue editam; analista/revisor só leem</td><td>Escrita single-threaded por árvore; dois escritores = decisões conflitantes.</td><td><code>LEIA-ME-AGENTE.md</code>, <code>agents/README.md</code></td></tr>
+      <tr id="inv-bare"><td>Nunca lançar worker com <code class="ext">claude --bare</code></td><td>Esse modo pula todos os hooks.</td><td><code>agents/README.md</code>, <code>docs/benchmark-2026-10-27.md</code></td></tr>
+      <tr id="inv-agents-md"><td><code class="ext">AGENTS.md</code> sem <code class="ext">@import</code></td><td>Antigravity e dsh leem o texto literal.</td><td><code>bin/lint-contexto.mjs</code>, <code>templates/AGENTS.md</code></td></tr>
+      <tr id="inv-pacote"><td><code class="ext">files</code> do <code>package.json</code> leva tudo que <code class="ext">init</code>/<code class="ext">agents</code> usam</td><td>Faltou no pacote = o npx quebra no projeto do usuário.</td><td>teste "pacote npm leva…" em <code>test/engines.test.mjs</code></td></tr>
+      <tr id="inv-local"><td>Páginas locais (editor de engines, este guia) só em 127.0.0.1 com checagem de Host</td><td>Um site aberto no navegador não pode ler ou gravar arquivo local.</td><td><code>bin/engines-ui.mjs</code>, <code>docs/guia-de-desenvolvimento/servir.mjs</code></td></tr>
+      <tr id="inv-pessoal"><td><code>extras/infra-pessoal/</code> nunca vai para quem adota</td><td>O repo é open source; aquele mapa é pessoal.</td><td><code>templates/AGENTS.md</code>, <code>agents/README.md</code></td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section id="regras">
+  <h2>Regras e números</h2>
+  <p>Os 17 inegociáveis estão em <a href="../../inegociaveis.md"><code>inegociaveis.md</code></a> (fonte única; aqui não são copiados). Grupos: qualidade e verdade (1–4), segurança (5–6), entrega (7–8), automação (9), tokens e contexto (10–12), código (13–14), higiene (15–17).</p>
+  <div class="tabela"><table>
+    <thead><tr><th>Item</th><th>Valor/Limite</th><th>Por quê</th><th>Fonte</th></tr></thead>
+    <tbody>
+      <tr id="regra-agents-md"><td><code class="ext">AGENTS.md</code></td><td>≤ 120 linhas</td><td>Arquivo de contexto inchado custa mais token sem melhorar resultado.</td><td><code class="ext">LIMITES.agentsMd</code> em <code>bin/lint-contexto.mjs</code>; inegociável 10</td></tr>
+      <tr id="regra-skill"><td>SKILL.md do núcleo</td><td>≤ 120 linhas</td><td>Skill grande vira contexto caro; detalhe vai para <code class="ext">references/</code>.</td><td><code class="ext">LIMITES.skillLinhas</code> em <code>bin/lint-contexto.mjs</code>; inegociável 11</td></tr>
+      <tr id="regra-descricao"><td>description de skill</td><td>1 linha, ≤ 350 caracteres</td><td>Entra no contexto de toda sessão.</td><td><code class="ext">LIMITES.descricao</code> em <code>bin/lint-contexto.mjs</code></td></tr>
+      <tr id="regra-papel"><td>Papel (<code>agents/*.md</code>)</td><td>corpo ≤ 25 linhas, ≤ 2 skills</td><td>Cada papel lê só o que é dele.</td><td><code class="ext">LIMITES.papelLinhas</code>/<code class="ext">papelSkills</code> em <code>bin/lint-contexto.mjs</code></td></tr>
+      <tr id="regra-excecao"><td>Exceção ao lint</td><td>uma linha <code class="ext">&lt;skill&gt; &lt;motivo&gt;</code></td><td>Exceção é dívida visível (vendorizada ou gerenciada por outra ferramenta).</td><td><code>.contexto-allow</code></td></tr>
+      <tr id="regra-issue"><td>Corpo de issue</td><td>≤ 400 palavras (env <code class="ext">ISSUE_MAX_PALAVRAS</code>) e 4 seções</td><td>Issue longa ou sem critério o agente executa mal.</td><td><code>templates/.claude/hooks/valida-issue.sh</code></td></tr>
+      <tr id="regra-lote"><td>Lote do <code class="ext">/proximas</code></td><td>teto 3 em paralelo; até 2 rodadas dev↔revisor; mostra no máx. 8 issues</td><td>O gargalo é a revisão humana dos PRs.</td><td><code>skills/proximas/SKILL.md</code>, <code>agents/README.md</code></td></tr>
+      <tr id="regra-codigo"><td>Função / arquivo</td><td>4–20 linhas; arquivo &lt;500 (ideal 200–300); máx. 2 níveis de indentação</td><td>Clean Code para agentes.</td><td><code>inegociaveis.md</code> item 13, <code>rules/clean-code-agents.md</code></td></tr>
+      <tr id="regra-portas"><td>Portas locais</td><td>editor de engines 4317; guia 4318</td><td>Padrão quando <code class="ext">--porta</code> não é passado.</td><td><code>bin/padraoai.mjs</code>, <code>docs/guia-de-desenvolvimento/servir.mjs</code></td></tr>
+      <tr id="regra-corpo-engines"><td>Corpo do PUT do editor</td><td>64 KiB</td><td>Limite de entrada em rota local (inegociável 6).</td><td><code class="ext">LIMITE_CORPO</code> em <code>bin/engines-ui.mjs</code></td></tr>
+      <tr id="regra-node"><td>Node no CI</td><td>22</td><td>Versão em que a suíte roda; <code class="ext">npm test</code> usa glob explícito porque <code class="ext">node --test test/</code> quebra no Node 22.</td><td><code>.github/workflows/ci.yml</code>, commit b1747ac</td></tr>
+      <tr id="regra-regressao"><td>Nome de teste de regressão</td><td><code class="ext">Regressao_Issue{N}_&lt;comportamento&gt;</code></td><td>Liga o bug ao teste que o prova.</td><td><code>ADOTAR.md</code>, <code>skills/tdd-regressao/SKILL.md</code></td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section id="pode-nao-pode">
+  <h2>Pode / Não pode</h2>
+  <div class="duas">
+    <div class="cartao pode"><h4 class="ok">Pode</h4><ul>
+      <li>Editar <code>agents/</code>, <code>skills/</code>, <code>templates/</code>, <code>rules/</code>, <code>bin/</code> com teste em <code>test/</code> e <code class="ext">npm test</code> verde.</li>
+      <li>Criar skill quando há uso recorrente (inegociável 11), no lugar certo (núcleo × extras).</li>
+      <li>Rodar hooks e testes localmente; abrir PR. Merge e deploy são do mantenedor.</li>
+      <li>Exemplos fictícios em templates e testes, marcados como tais.</li>
+    </ul></div>
+    <div class="cartao naopode"><h4 class="erro">Não pode</h4><ul>
+      <li>Segredo, token, host, IP ou dado pessoal em arquivo do repo: ele é <b>open source</b>. Só variável de ambiente/cofre; logar a ausência, nunca o valor (inegociável 5).</li>
+      <li>Copiar <code>extras/infra-pessoal/</code> para template ou projeto que adota.</li>
+      <li>Editar a cópia gerada (<code class="ext">.claude/agents/</code>, <code class="ext">.agents/skills/papel-*</code>) em vez da fonte <code>agents/</code>.</li>
+      <li>Fazer o <code class="ext">init</code> sobrescrever; pôr <code class="ext">skills:</code> no frontmatter gerado; <code class="ext">@import</code> no <code class="ext">AGENTS.md</code>.</li>
+      <li>Furar o lint sem linha em <code>.contexto-allow</code>; <code class="ext">gh pr merge</code>, force push ou <code class="ext">ssh</code> fora de <code class="ext">infra</code>/<code class="ext">deploy</code> (o hook barra).</li>
+    </ul></div>
+  </div>
+  <h3>Arquivos de dono único / não editar à mão</h3>
+  <div class="tabela"><table>
+    <thead><tr><th>Arquivo</th><th>Dono</th><th>Por quê</th></tr></thead>
+    <tbody>
+      <tr id="dono-ai-memory"><td><code>skills/ai-memory-retrieval/SKILL.md</code> (e demais <code class="ext">ai-memory-*</code>)</td><td>ai-memory</td><td>Reescrita ao reinstalar o roteamento (<code>.contexto-allow</code>).</td></tr>
+      <tr id="dono-vendorizadas"><td><code>skills/security-audit/</code>, <code>skills/worktrees/</code></td><td>upstream (vendorizadas)</td><td>Mudança local se perde ao atualizar (<code>.contexto-allow</code>).</td></tr>
+      <tr id="dono-infra"><td><code>extras/infra-pessoal/INFRA.md</code></td><td>mantenedor</td><td>Mapa pessoal; o agente <code class="ext">infra</code> e o <code class="ext">/issue</code> só leem.</td></tr>
+      <tr id="dono-inegociaveis"><td><code>inegociaveis.md</code></td><td>mantenedor</td><td>Regra dura; é importado nas instruções globais de todos os projetos dele. Mudança só com PR próprio.</td></tr>
+    </tbody>
+  </table></div>
+  <p class="mut">LGPD e dados de terceiros: <b>a definir</b> (o repo não tem política escrita além do inegociável 5).</p>
+</section>
+
+<section id="como-fazer">
+  <h2>Como fazer</h2>
+  <h3 id="receita-testar">Testar e checar contexto (antes de todo commit)</h3>
+  <pre><code>npm test                 # node --test test/*.test.mjs
+npm run lint:contexto    # inegociáveis 10 e 11
+npm run guia:check       # caminhos e âncoras deste guia</code></pre>
+  <h3 id="receita-guia">Abrir este guia</h3>
+  <pre><code>npm run guia             # http://127.0.0.1:4318/ com catálogo e estado ao vivo
+xdg-open docs/guia-de-desenvolvimento/index.html   # file://, sem catálogo/estado</code></pre>
+  <h3 id="receita-adotar">Adotar num projeto</h3>
+  <pre><code>cd ~/meu-projeto
+npx github:Pa1loh/PadraoAI init      # nunca sobrescreve
+# depois, ao agente: "leia docs/padraoai/ADOTAR.md e adote o padrão"</code></pre>
+  <h3 id="receita-papeis">Mudar um papel e regenerar</h3>
+  <p>Edite a fonte em <code>agents/</code> (corpo ≤25 linhas) e a matriz "Quem acessa o quê" em <code>agents/README.md</code>; teste em <code>test/agents-sync.test.mjs</code>.</p>
+  <pre><code>node bin/agents-sync.mjs /caminho/do/projeto     # ou: npx github:Pa1loh/PadraoAI agents</code></pre>
+  <h3 id="receita-skill">Criar uma skill</h3>
+  <ol>
+    <li>Decida o lugar: workflow do padrão → <code>skills/</code>; opcional → <code>extras/skills/</code>; só de um projeto → <code class="ext">.claude/skills/</code> do projeto. Já existe parecida? Estenda.</li>
+    <li>Frontmatter com <code class="ext">name</code> e <code class="ext">description</code> de 1 linha com gatilhos; ≤120 linhas.</li>
+    <li>Se o <code class="ext">init</code>/<code class="ext">agents</code> distribui: entra em <code class="ext">files</code> do <code>package.json</code> e em <code class="ext">SKILLS_DE_FLUXO</code> de <code>bin/agents-sync.mjs</code>.</li>
+    <li>Atualize o mapa do <code>README.md</code> e o <code>CATALOGO-SOB-DEMANDA.md</code>. O catálogo deste guia se atualiza sozinho.</li>
+  </ol>
+  <h3 id="receita-ligar-skill">Ligar/desligar skill só num projeto</h3>
+  <pre><code>bin/skill-on agent-browser /caminho/do/projeto
+bin/skill-off agent-browser /caminho/do/projeto</code></pre>
+  <h3 id="receita-hook">Adicionar um hook</h3>
+  <p>Script em <code>templates/.claude/hooks/</code> (saída 2 = bloqueia), registro em <code>templates/.claude/settings.json</code> <b>e</b> em <code>dsh/hooks.json</code> (o teste exige os mesmos), caso bom e ruim em <code>test/agents-sync.test.mjs</code>. Hooks no dsh, uma vez por máquina:</p>
+  <pre><code>node bin/dsh-setup.mjs</code></pre>
+  <h3 id="receita-engines">Ver ou editar engine por papel</h3>
+  <pre><code>node bin/padraoai.mjs engines plano templates/docs/engines.yml
+npx github:Pa1loh/PadraoAI engines --abrir        # no projeto: edita docs/engines.yml</code></pre>
+  <h3 id="receita-pr">Entregar (PR)</h3>
+  <p>Branch própria (<code class="ext">feat/…</code>, <code class="ext">fix/issue-N-slug</code>), PR pequeno com uma intenção, CI verde. Merge em <code class="ext">master</code> = publicado (ver <a href="#superficie-publica">superfície pública</a>).</p>
+</section>
+
+<section id="superficie-publica">
+  <h2>Superfície pública (lib/CLI)</h2>
+  <div class="tabela"><table>
+    <thead><tr><th>Comando</th><th>Faz</th><th>Fonte</th></tr></thead>
+    <tbody>
+      <tr id="cli-init"><td><code class="ext">npx github:Pa1loh/PadraoAI init</code></td><td>Copia <code>templates/</code>, gera papéis e skills de fluxo, copia <code>inegociaveis.md</code> e <code>ADOTAR.md</code>. Nunca sobrescreve.</td><td><code>bin/padraoai.mjs</code></td></tr>
+      <tr id="cli-agents"><td><code class="ext">… agents</code></td><td>Regera os papéis nos 3 CLIs (sobrescreve as cópias geradas).</td><td><code>bin/agents-sync.mjs</code></td></tr>
+      <tr id="cli-engines"><td><code class="ext">… engines [plano] [arquivo] [--porta N] [--abrir]</code></td><td><code class="ext">plano</code> imprime engine efetiva por papel; sem ele, abre o editor local.</td><td><code>bin/engines.mjs</code>, <code>bin/engines-ui.mjs</code></td></tr>
+    </tbody>
+  </table></div>
+  <p>O que vai para o pacote é a lista <code class="ext">files</code> do <code>package.json</code>; <code>docs/</code> (incluindo este guia) fica fora. Distribuição: <code class="ext">npx github:</code> lê a branch padrão, então <b>merge em master publica</b> (<code>README.md</code>).</p>
+  <p class="mut">Versionamento e compatibilidade (quando subir de 0.1.0, changelog, tag, quebra de template): <b>a definir</b>.</p>
+</section>
+
+<section id="catalogo">
+  <h2>Catálogo: papéis, skills e rules</h2>
+  <p class="mut">Montado ao vivo de <code>agents/*.md</code>, <code>skills/*/SKILL.md</code>, <code>extras/skills/*/SKILL.md</code> e <code>rules/*.md</code>. Item novo aparece sem editar este HTML. Âncoras: <code class="ext">#papel-&lt;nome&gt;</code>, <code class="ext">#skill-&lt;nome&gt;</code>, <code class="ext">#rule-&lt;arquivo&gt;</code>. <span class="tag pub">npx</span> = vai no pacote.</p>
+  <div id="catalogo-conteudo"><div class="aviso-box">Catálogo carrega de <code class="ext">/dados.json</code>. Aberto por <code class="ext">file://</code>? Rode <code class="ext">npm run guia</code>. Enquanto isso, as fontes são as pastas acima.</div></div>
+</section>
+
+<section id="estado">
+  <h2>Estado atual</h2>
+  <h3>Pronto e verificado</h3>
+  <ul>
+    <li>Fluxo <code class="ext">/issue</code> de ponta a ponta no Claude Code e no <code class="ext">dsh headless</code>; hooks barram ssh, <code class="ext">.env</code>, force push e issue fraca em Claude e dsh (<code>agents/README.md</code>, <code>docs/benchmark-2026-10-27.md</code>).</li>
+    <li><code class="ext">/proximas</code> com lote paralelo em worktrees, editor de <code class="ext">engines.yml</code>, lint de contexto no CI.</li>
+  </ul>
+  <h3>Não verificado</h3>
+  <ul><li>Hooks em codex e agy; <code class="ext">/issue</code> no agy (<code>docs/benchmark-2026-10-27.md</code>, <code>agents/README.md</code>).</li></ul>
+  <h3>Fila e PRs recentes (GitHub, ao vivo)</h3>
+  <div id="estado-conteudo"><div class="aviso-box">Vem do <code class="ext">gh</code> via <code class="ext">npm run guia</code>. Por <code class="ext">file://</code>: <code class="ext">gh issue list</code> e <code class="ext">gh pr list --state all</code>.</div></div>
+</section>
+
+<section id="fontes">
+  <h2>Fontes</h2>
+  <div class="tabela"><table>
+    <thead><tr><th>Arquivo</th><th>Para quê</th></tr></thead>
+    <tbody>
+      <tr><td><a href="../../README.md"><code>README.md</code></a></td><td>Mapa do repo e como adotar.</td></tr>
+      <tr><td><a href="../../inegociaveis.md"><code>inegociaveis.md</code></a></td><td>As 17 regras duras.</td></tr>
+      <tr><td><a href="../../ADOTAR.md"><code>ADOTAR.md</code></a></td><td>Roteiro de adoção e checklist.</td></tr>
+      <tr><td><a href="../../LEIA-ME-AGENTE.md"><code>LEIA-ME-AGENTE.md</code></a></td><td>Porta do agente; subagents e paralelismo.</td></tr>
+      <tr><td><a href="../../agents/README.md"><code>agents/README.md</code></a></td><td>Desenho do time, por CLI, quem acessa o quê.</td></tr>
+      <tr><td><a href="../../CATALOGO-SOB-DEMANDA.md"><code>CATALOGO-SOB-DEMANDA.md</code></a></td><td>O que liga por projeto e como.</td></tr>
+      <tr><td><a href="../../mcp/global.md"><code>mcp/global.md</code></a></td><td>MCPs usados e onde.</td></tr>
+      <tr><td><a href="../../docs/benchmark-2026-10-27.md"><code>docs/benchmark-2026-10-27.md</code></a></td><td>Benchmarks locais com data.</td></tr>
+      <tr><td><a href="https://github.com/Pa1loh/PadraoAI">github.com/Pa1loh/PadraoAI</a></td><td>Issues, PRs e CI. ADRs, épicos e milestones: <b>a definir</b> (ainda não existem).</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section id="duvidas">
+  <h2>Dúvidas futuras</h2>
+  <p class="mut">O que o guia marca como <b>a definir</b>: falta decisão do mantenedor. Respondeu? Mova a resposta para a seção certa (ou um ADR) e apague o item aqui no mesmo PR.</p>
+  <div class="tabela"><table>
+    <thead><tr><th>Dúvida</th><th>Onde impacta</th></tr></thead>
+    <tbody>
+      <tr id="duvida-versionamento"><td>Quando sair da 0.1.0? Vai ter changelog ou tag? O que conta como quebra para quem já adotou (mudar template, renomear arquivo em <code>rules/</code>)?</td><td><a href="#superficie-publica">superfície pública</a></td></tr>
+      <tr id="duvida-lgpd"><td>Existe política de LGPD e dados de terceiros para este repo além do inegociável 5?</td><td><a href="#pode-nao-pode">pode / não pode</a></td></tr>
+      <tr id="duvida-adr"><td>Criar <code class="ext">docs/adr/</code> neste repo? Hoje não há ADRs, épicos nem milestones.</td><td><a href="#fontes">fontes</a></td></tr>
+      <tr id="duvida-dados-pessoais"><td><code>CATALOGO-SOB-DEMANDA.md</code> (público) cita um IP da rede do mantenedor e caminhos de home. Tirar de lá e deixar só em <code>extras/infra-pessoal/</code>?</td><td><a href="#pode-nao-pode">pode / não pode</a></td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+</main>
+<script>
+// Só o que muda com frequência é montado aqui (catálogo e estado); o resto é HTML estático.
+const el = (tag, props = {}, ...filhos) => { const n = Object.assign(document.createElement(tag), props); n.append(...filhos.filter((f) => f != null)); return n; };
+const slug = (t) => String(t).toLowerCase().replace(/\.md$/, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+
+function focar() {
+  const alvo = document.getElementById(decodeURIComponent(location.hash.slice(1)));
+  if (!alvo || alvo.tagName === 'SECTION') return;
+  alvo.scrollIntoView({ block: 'center' });
+  alvo.classList.add('destaque');
+  setTimeout(() => alvo.classList.remove('destaque'), 2500);
+}
+
+function cartao(id, titulo, texto, ...extras) {
+  return el('div', { className: 'cartao', id }, el('h4', {}, el('a', { href: '#' + id, textContent: titulo })), el('p', { textContent: texto }), ...extras);
+}
+
+function grupo(titulo, itens) { return [el('h3', { textContent: `${titulo} (${itens.length})` }), el('div', { className: 'grade' }, ...itens)]; }
+
+function desenharCatalogo(d) {
+  const meta = (t) => el('p', { className: 'mut', textContent: t });
+  const skill = (s) => cartao('skill-' + slug(s.nome), s.nome, s.descricao, meta(`${s.pasta} · ${s.linhas} linhas `), s.publicada ? el('span', { className: 'tag pub', textContent: 'npx' }) : null);
+  document.getElementById('catalogo-conteudo').replaceChildren(
+    ...grupo('Papéis', d.papeis.map((p) => cartao('papel-' + slug(p.nome), p.nome, p.descricao, meta(`${p.arquivo} · modelo ${p.modelo} · acesso ${p.acesso}${p.skills ? ' · skills ' + p.skills : ''}`)))),
+    ...grupo('Skills do núcleo', d.skills.filter((s) => s.origem === 'skills').map(skill)),
+    ...grupo('Skills extras', d.skills.filter((s) => s.origem !== 'skills').map(skill)),
+    ...grupo('Rules', d.rules.map((r) => cartao('rule-' + slug(r.arquivo.replace('rules/', '')), r.titulo, '', meta(`${r.arquivo} · ${r.linhas} linhas`)))));
+}
+
+function desenharEstado(e) {
+  const caixa = document.getElementById('estado-conteudo');
+  if (!e) return caixa.replaceChildren(el('div', { className: 'aviso-box', textContent: 'gh indisponível ou sem login: rode `gh auth status`.' }));
+  const linha = (tipo, x, status) => el('tr', { id: `${tipo}-${x.number}` }, el('td', {}, el('a', { href: x.url, textContent: '#' + x.number })), el('td', { textContent: x.title }), el('td', { textContent: status }));
+  const tabela = (titulo, linhas, vazio) => [el('h3', { textContent: titulo }), linhas.length
+    ? el('div', { className: 'tabela' }, el('table', {}, el('tbody', {}, ...linhas))) : el('p', { className: 'mut', textContent: vazio })];
+  caixa.replaceChildren(
+    ...tabela('Issues abertas (fila)', e.issues.map((i) => linha('issue', i, i.labels.map((l) => l.name).join(', ') || 'aberta')), 'Nenhuma issue aberta.'),
+    ...tabela('PRs recentes', e.prs.map((p) => linha('pr', p, p.state === 'MERGED' ? `mergeado ${p.mergedAt.slice(0, 10)}` : p.state.toLowerCase())), 'Nenhum PR.'));
+}
+
+addEventListener('hashchange', focar);
+if (location.protocol === 'file:') focar();
+else fetch('/dados.json').then((r) => r.json()).then((d) => { desenharCatalogo(d); desenharEstado(d.estado); focar(); })
+  .catch(() => document.getElementById('catalogo-conteudo').prepend(el('p', { className: 'erro', textContent: 'Falhou ao ler /dados.json; rode `npm run guia`.' })));
+</script>
+</body>
+</html>
