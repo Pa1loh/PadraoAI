@@ -22,7 +22,27 @@ test('gera os 3 formatos para cada papel e a skill /issue', () => {
   }
   assert.ok(existsSync(join(projeto, '.claude/skills/issue/SKILL.md')));
   assert.ok(existsSync(join(projeto, '.agents/skills/issue/SKILL.md')));
-  assert.ok(!existsSync(join(projeto, '.claude/agents/dev.md')), 'dev é a sessão da aba, não um agent');
+});
+
+test('dev é worker de lote: edita só na própria worktree, não delega, não abre PR', () => {
+  const d = ler('.claude/agents/dev.md');
+  assert.match(d, /^isolation: worktree$/m, 'dev paralelo sem worktree pisa no outro');
+  assert.match(d, /^tools: .*\bEdit\b/m);
+  assert.doesNotMatch(d.match(/^tools: (.*)$/m)[1], /\bAgent\b/, 'subagent não cria subagent');
+  assert.match(d, /^disallowedTools: .*\bAgent\b/m);
+  assert.match(d, /Não crie subagents/);
+  assert.match(d, /TDD/);
+  assert.match(d, /gh pr create/, 'deve dizer que PR é do orquestrador');
+});
+
+test('/proximas: triagem com paralelismo, para antes de começar, e orquestra dev → revisor → PR', () => {
+  for (const rel of ['.claude/skills/proximas/SKILL.md', '.agents/skills/proximas/SKILL.md']) {
+    const s = ler(rel);
+    assert.doesNotMatch(s, /^disable-model-invocation: true/m, 'a pergunta em linguagem natural precisa acionar a skill');
+    for (const palavra of ['gh issue list', 'Onde mexer', 'paralel', 'começa', 'dev', 'revisor', 'gh pr create', 'worktree', 'docs/engines.yml']) {
+      assert.match(s, new RegExp(palavra), `${rel} sem "${palavra}"`);
+    }
+  }
 });
 
 test('nenhum papel edita código nem cria subagents', () => {
