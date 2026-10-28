@@ -3,7 +3,8 @@
 Fonte única dos papéis. `npx github:Pa1loh/PadraoAI agents` (ou `node bin/agents-sync.mjs [projeto]`) gera o mesmo time para os 3 CLIs; `init` já faz isso sem sobrescrever.
 
 ## Desenho (e por quê)
-- **A aba/worktree da issue é uma sessão normal**: ela orquestra e programa. Não há agent `dev`. A doc do Claude Code manda usar a conversa principal quando as fases (plano, código, teste) compartilham contexto, e subagents para isolamento, restrição de ferramentas e resultado em resumo.
+- **A aba/worktree da issue é uma sessão normal**: ela orquestra e programa. Para issue avulsa não há agent `dev`. A doc do Claude Code manda usar a conversa principal quando as fases (plano, código, teste) compartilham contexto, e subagents para isolamento, restrição de ferramentas e resultado em resumo.
+- **`/proximas`: lote em paralelo.** Pergunte "quais issues são as próximas e o que dá pra fazer em paralelo?": a sessão lista as abertas, ordena e monta o lote (escopos de **Onde mexer** disjuntos, nada de arquivo compartilhado, sem dependência, teto de 3) e **para**. No "começa", dispara um agent `dev` por issue, cada um com `isolation: worktree` (worktree própria a partir da branch padrão, verificado na doc do Claude Code), roda o `revisor` sobre cada diff, devolve achados ao dev (até 2 rodadas), faz push, abre o PR e remove a worktree. O `dev` é o único papel que edita; não delega nem dá push. Só no Claude Code: no dsh/agy o lote roda em série com `/issue`.
 - **Subagents**: `analista` e `revisor` (leitura, contexto limpo).
 - **`infra` e `deploy`**: sessões separadas, abertas por você com `claude --agent infra|deploy`, porque ali a restrição de ferramentas e a aprovação humana fazem diferença.
 - **`/issue-criar`**: escreve a issue para agente (problema, exemplo, critério de pronto, onde mexer, fora de escopo) com o analista e só abre após o seu "sim". O `/issue` recusa implementar issue sem critério de pronto verificável.
@@ -36,6 +37,7 @@ Só o Claude barra por ferramenta; Claude e dsh (com `dsh-setup`) barram por hoo
 | Papel | Edita | Bash | Web | MCP | Aprovação humana |
 |---|---|---|---|---|---|
 | sessão da issue (orquestra + código) | sim | sim, menos host/merge/force push (hook) | não pede | ai-memory, sonarqube | merge e deploy são seus |
+| dev (lote do `/proximas`) | sim, só na própria worktree | sim, menos host/merge/force push (hook); sem push | não | não | o "começa" do lote |
 | analista | não | não | sim | ai-memory | não |
 | revisor | não | só git diff/testes | não | sonarqube (leitura) | não |
 | infra | não | sim (leitura) | não | ai-memory | **qualquer ação que muda estado** |

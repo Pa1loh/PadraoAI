@@ -16,10 +16,10 @@ Depois diga ao agente: **"leia docs/padraoai/ADOTAR.md e adote o padrão"**. Ou,
 | `inegociaveis.md` | 17 regras duras: regra, porquê, enforcement |
 | `ADOTAR.md` | roteiro de adoção + checklist de verificação |
 | `LEIA-ME-AGENTE.md` | porta de entrada para o agente |
-| `agents/` | time de papéis (analista, revisor, infra, deploy), skills `/issue` e `/issue-criar`, matriz de acesso; `agents` gera para Claude/Antigravity/dsh |
+| `agents/` | time de papéis (analista, dev, revisor, infra, deploy), skills `/issue`, `/issue-criar` e `/proximas` (lote paralelo em worktrees), matriz de acesso; `agents` gera para Claude/Antigravity/dsh |
 | `templates/` | exemplos copiados pelo `init` (adapte, não cole cego): AGENTS.md, templates de PR/issue, `docs/engines.yml` (engine por papel) e `docs/agent-log.md` (registro por issue) |
 | `rules/` | clean-architecture, tdd-protocol, clean-code-agents, dotnet-10 |
-| `skills/` | núcleo: adotar-padrao, issue-criar, tdd-regressao, pr-audit, release, validate-agent-config, security-audit, sonarqube, worktrees, agent-browser, ai-memory-* |
+| `skills/` | núcleo: adotar-padrao, issue-criar, proximas, tdd-regressao, pr-audit, release, validate-agent-config, security-audit, sonarqube, worktrees, agent-browser, ai-memory-* |
 | `extras/` | opcional: design, vídeo (watch), 3dprint, unity, humanizer, aliexpress, exemplos de infra/agents. `extras/infra-pessoal/` é homelab do mantenedor, não parte do padrão |
 | `mcp/` | MCPs usados e quando |
 
