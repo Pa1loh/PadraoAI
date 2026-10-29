@@ -1,6 +1,6 @@
 # <Projeto> — Instruções para agentes
 
-> Fonte única. CLAUDE.md e GEMINI.md apontam para cá. Máx. ~120 linhas: só o que o agente erraria sem saber.
+> Fonte única. CLAUDE.md aponta para cá; Antigravity e dsh leem este arquivo direto. Máx. ~120 linhas: só o que o agente erraria sem saber.
 > Padrão: https://github.com/Pa1loh/PadraoAI (leia `inegociaveis.md`).
 
 ## Comandos

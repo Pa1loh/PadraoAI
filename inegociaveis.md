@@ -48,5 +48,5 @@ Base: Akita (XP/TDD/Clean Code p/ agentes), docs oficiais do Claude Code, estudo
 ## Higiene
 
 15. **Worktree fechou a tarefa → remove** (`git worktree remove` + prune) e fica fora do grep (`.rgignore`). Cache de build/restore no CI. `bin/obj`, `node_modules`, worktrees nunca no contexto.
-16. **Fonte única de instruções:** `AGENTS.md`; `CLAUDE.md`/`GEMINI.md` = ponteiro `@AGENTS.md`. Decisão durável → ADR com data e porquê. Memória de sessão → ai-memory. Nunca o mesmo fato em dois lugares.
+16. **Fonte única de instruções:** `AGENTS.md`; `CLAUDE.md` = ponteiro `@AGENTS.md`. Antigravity e dsh leem o `AGENTS.md` direto. `GEMINI.md` é legado (Gemini CLI saiu do setup): não se cria. Decisão durável → ADR com data e porquê. Memória de sessão → ai-memory. Nunca o mesmo fato em dois lugares.
 17. **Kaizen:** toda falha do agente vira uma de: teste, hook, linha no AGENTS.md ou ADR. Se não virou nada, vai se repetir.

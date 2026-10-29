@@ -6,7 +6,7 @@ description: Validar a configuração de IA do projeto (tamanho do AGENTS.md, po
 # Validar configuração de agente
 
 Rodar e reportar com números:
-- `wc -l AGENTS.md CLAUDE.md GEMINI.md`: AGENTS.md ≤ ~120 linhas; os outros só `@AGENTS.md`.
+- `wc -l AGENTS.md CLAUDE.md`: AGENTS.md ≤ ~120 linhas; CLAUDE.md só `@AGENTS.md`.
 - Mesmo bloco repetido em dois arquivos carregados? (`grep -c` de um trecho característico)
 - Skills: cada `SKILL.md` tem `name` e `description` de 1 linha com gatilhos; < 120 linhas; sem skill sem uso.
 - `find . ~/.claude/skills -maxdepth 2 -xtype l` → symlinks quebrados; `@imports` resolvem.

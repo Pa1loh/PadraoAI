@@ -8,7 +8,7 @@ stack e comando de build/teste · onde roda em produção/QA e como faz deploy �
 
 ## 1. Instrução do agente
 - Criar `AGENTS.md` (≤ ~120 linhas) a partir de `templates/AGENTS.md`: stack, comandos, invariantes, armadilhas, ponteiros.
-- `CLAUDE.md` e `GEMINI.md` = só `@AGENTS.md`.
+- `CLAUDE.md` = só `@AGENTS.md`. Não crie `GEMINI.md` (Gemini CLI é legado neste setup).
 - Regras genéricas desejadas entram por `@import` apenas se pequenas; domínio extenso → `.claude/rules/*.md` com `paths:`.
 - Projeto existente com AGENTS.md/CLAUDE.md grande: **enxugar**, movendo domínio para rules/ADR.
 

@@ -1,0 +1,22 @@
+# Quem faz o quê, por qualidade x custo. O /issue e o /issue-criar leem este arquivo e RECOMENDAM;
+# só mudam de engine se você aprovar. Padrão é solo: a sessão da issue na engine forte com quota.
+# Delegue só com: quota apertando, unidades independentes, leitura pesada ou revisão cruzada.
+# Adapte aos CLIs que você tem e confira os modelos no catálogo deles (mudam rápido).
+perfil: base          # economico | base | qualidade
+indisponivel: []      # engines sem quota ou fora do ar agora, ex.: [claude]
+
+tiers:
+  forte:  { engine: claude, modelo: opus,   esforco: high }
+  media:  { engine: claude, modelo: sonnet, esforco: medium }
+  barata: { engine: dsh,    modelo: padrao-do-cli, esforco: medium }
+
+papeis:                # tier por perfil
+  issue:    { economico: forte,  base: forte, qualidade: forte }   # escrever bem custa menos que executar mal
+  analista: { economico: barata, base: barata, qualidade: media }
+  dev:      { economico: media,  base: media, qualidade: forte }
+  revisor:  { economico: media,  base: media, qualidade: forte, outra_familia: true }  # engine diferente da do dev, se der
+
+fallback:              # ordem de engines quando a primeira está em indisponivel
+  claude: [agy, dsh]
+  agy: [claude, dsh]
+  dsh: [claude, agy]
