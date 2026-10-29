@@ -14,6 +14,8 @@ tem() { grep -Eq "$P$1" <<<"$cmd"; }
 
 # Sempre bloqueado, para qualquer papel
 tem 'git([[:space:]]+-[^[:space:]]+([[:space:]]+[^-[:space:]][^[:space:]]*)?)*[[:space:]]+push[[:space:]]+(.*[[:space:]])?(--force[^[:space:]]*|-f)([[:space:]]|$)' && bloqueia "git push --force"
+# \$HOME aqui é texto literal da regex (pega quem digitou "$HOME"), não expansão: aspas simples de propósito.
+# shellcheck disable=SC2016
 tem 'rm[[:space:]]+(-[a-zA-Z]*[rR][a-zA-Z]*[[:space:]]+)+(/|~|\$HOME)([[:space:]/]|$)' && bloqueia "rm -rf na raiz ou no home"
 
 # Só infra e deploy
