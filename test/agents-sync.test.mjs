@@ -176,3 +176,15 @@ test('hook valida-issue: barra gh issue create sem seções, longa demais ou dis
   assert.equal(rodaIssue(`gh issue create --title x --body-file ${bom}`).status, 0);
   for (const c of ['gh issue list', 'gh issue view 3', 'git commit -m "docs: gh issue create"']) assert.equal(rodaIssue(c).status, 0, c);
 });
+
+test('revisor checa guia desatualizado (achado IMPORTANTE, não bloqueante) e roda checar.mjs, ainda ≤25 linhas', () => {
+  const r = ler('.claude/agents/revisor.md');
+  assert.match(r, /docs\/guia-de-desenvolvimento/, 'revisor sem a checagem do guia');
+  assert.match(r, /IMPORTANTE/);
+  assert.match(r, /não bloqueante/);
+  assert.match(r, /guia possivelmente desatualizado/);
+  assert.match(r, /guia não precisa mudar porque/);
+  assert.match(r, /node docs\/guia-de-desenvolvimento\/checar\.mjs/);
+  const corpo = r.split(/^---$/m)[2].trim().split('\n').length;
+  assert.ok(corpo <= 25, `corpo do revisor com ${corpo} linhas (máx. 25)`);
+});

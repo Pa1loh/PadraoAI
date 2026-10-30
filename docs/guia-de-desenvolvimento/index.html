@@ -182,6 +182,7 @@
       <tr id="regra-corpo-engines"><td>Corpo do PUT do editor</td><td>64 KiB</td><td>Limite de entrada em rota local (inegociável 6).</td><td><code class="ext">LIMITE_CORPO</code> em <code>bin/engines-ui.mjs</code></td></tr>
       <tr id="regra-node"><td>Node no CI</td><td>22</td><td>Versão em que a suíte roda; <code class="ext">npm test</code> usa glob explícito porque <code class="ext">node --test test/</code> quebra no Node 22.</td><td><code>.github/workflows/ci.yml</code>, commit b1747ac</td></tr>
       <tr id="regra-regressao"><td>Nome de teste de regressão</td><td><code class="ext">Regressao_Issue{N}_&lt;comportamento&gt;</code></td><td>Liga o bug ao teste que o prova.</td><td><code>ADOTAR.md</code>, <code>skills/tdd-regressao/SKILL.md</code></td></tr>
+      <tr id="regra-guia-revisor"><td>Guia atualizado no mesmo PR</td><td>diff que toca código/config sem tocar <code>docs/guia-de-desenvolvimento/</code> (e sem "guia não precisa mudar porque ...") vira achado IMPORTANTE não bloqueante do revisor</td><td>CI não é padrão por enquanto; o revisor roda em todo PR (ADR 0005).</td><td><code>agents/revisor.md</code>, <code>skills/pr-audit/SKILL.md</code>, <code>docs/adr/0005-revisor-checa-guia-desatualizado.md</code></td></tr>
     </tbody>
   </table></div>
 </section>
